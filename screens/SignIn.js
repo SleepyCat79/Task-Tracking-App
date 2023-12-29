@@ -57,97 +57,101 @@ function SignIn() {
     return null;
   }
   return (
-    <SafeAreaView>
+    <View>
+      <Image
+        source={require("../assets/images/logo.png")}
+        style={styles.logo}
+      />
       <View>
-        <Image
-          source={require("../assets/images/logo.png")}
-          style={styles.logo}
-        />
-        <View>
-          <Text style={styles.text}>Sign In</Text>
-          <View style={[styles.input, styles.inputSpaceBlock]}>
-            <TextInput
-              style={[styles.tasktrackinghcmuteduvn, styles.textClr]}
-              placeholder="Type your email here"
-              keyboardType="email-address"
-            />
-            <View style={[styles.label, styles.orFlexBox]}>
-              <Text style={[styles.email, styles.emailTypo]}>Email</Text>
-            </View>
-          </View>
-          <View style={[styles.input1, styles.input1FlexBox]}>
-            <TextInput
-              style={[styles.password, styles.textLayout]}
-              placeholder="Password"
-              secureTextEntry={!visible}
-            />
-            <TouchableOpacity onPress={() => setvisible(!visible)}>
-              <Image
-                style={[styles.eyeOffIcon, styles.iconLayout]}
-                contentFit="cover"
-                source={
-                  visible
-                    ? require("../assets/images/nonhide.png")
-                    : require("../assets/images/hide.png")
-                }
-              />
-            </TouchableOpacity>
-          </View>
-          <View style={[styles.keep, styles.orFlexBox]}>
-            <TouchableOpacity onPress={() => setIsChecked(!isChecked)}>
-              <Image
-                style={styles.iconLayout}
-                contentFit="cover"
-                source={
-                  isChecked
-                    ? require("../assets/images/squarewithtick.png")
-                    : require("../assets/images/square.png")
-                }
-              />
-            </TouchableOpacity>
-            <Text style={[styles.keepMeLogged, styles.textClr]}>
-              Keep me logged in
-            </Text>
-          </View>
-          <TouchableOpacity
-            onPress={() => {
-              //signinfunction
-            }}
-          >
-            <View style={[styles.button, styles.input1FlexBox]}>
-              <Text style={[styles.signIn2, styles.signIn2Typo]}>Sign in</Text>
-            </View>
-          </TouchableOpacity>
-          <View style={[styles.or, styles.orFlexBox]}>
-            <Image
-              style={[styles.orItemLayout]}
-              contentFit="cover"
-              source={require("../assets/images/signinwith.png")}
-            />
-          </View>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <TouchableOpacity>
-              <Image
-                style={styles.facebook}
-                source={require("../assets/images/logofb.png")}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Image
-                style={styles.linked}
-                source={require("../assets/images/logolinked.png")}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Image
-                style={styles.google}
-                source={require("../assets/images/logogoogle.png")}
-              />
-            </TouchableOpacity>
+        <Text style={styles.text}>Sign In</Text>
+        <View style={[styles.input, styles.inputSpaceBlock]}>
+          <TextInput
+            style={[styles.tasktrackinghcmuteduvn, styles.textClr]}
+            placeholder="Type your email here"
+            keyboardType="email-address"
+          />
+          <View style={[styles.label, styles.orFlexBox]}>
+            <Text style={[styles.email, styles.emailTypo]}>Email</Text>
           </View>
         </View>
+        <View style={[styles.input1, styles.input1FlexBox]}>
+          <TextInput
+            style={[styles.password, styles.textLayout]}
+            placeholder="Password"
+            secureTextEntry={!visible}
+          />
+          <TouchableOpacity onPress={() => setvisible(!visible)}>
+            <Image
+              style={[styles.eyeOffIcon, styles.iconLayout]}
+              contentFit="cover"
+              source={
+                visible
+                  ? require("../assets/images/nonhide.png")
+                  : require("../assets/images/hide.png")
+              }
+            />
+          </TouchableOpacity>
+        </View>
+        <View style={[styles.keep, styles.orFlexBox]}>
+          <TouchableOpacity onPress={() => setIsChecked(!isChecked)}>
+            <Image
+              style={styles.iconLayout}
+              contentFit="cover"
+              source={
+                isChecked
+                  ? require("../assets/images/squarewithtick.png")
+                  : require("../assets/images/square.png")
+              }
+            />
+          </TouchableOpacity>
+          <Text style={[styles.keepMeLogged, styles.textClr]}>
+            Keep me logged in
+          </Text>
+        </View>
+        <TouchableOpacity
+          onPress={() => {
+            //signinfunction
+          }}
+        >
+          <View style={[styles.button, styles.input1FlexBox]}>
+            <Text style={[styles.signIn2, styles.signIn2Typo]}>Sign in</Text>
+          </View>
+        </TouchableOpacity>
+        <View style={[styles.or, styles.orFlexBox]}>
+          <Image
+            style={[styles.orItemLayout]}
+            contentFit="cover"
+            source={require("../assets/images/signinwith.png")}
+          />
+        </View>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <TouchableOpacity>
+            <Image
+              style={styles.facebook}
+              source={require("../assets/images/logofb.png")}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Image
+              style={styles.linked}
+              source={require("../assets/images/logolinked.png")}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Image
+              style={styles.google}
+              source={require("../assets/images/logogoogle.png")}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
-    </SafeAreaView>
+      <Text style={styles.needAnAccountContainer}>
+        <Text style={styles.needAnAccount}>{`Need an account? `}</Text>
+      </Text>
+      <TouchableOpacity>
+        <Text style={styles.createOne}>Create one</Text>
+      </TouchableOpacity>
+    </View>
   );
 }
 const styles = StyleSheet.create({
@@ -175,7 +179,28 @@ const styles = StyleSheet.create({
     top: screenHeight * 0.45, // 40% of the screen's height
     left: screenWidth * 0.42, // 50% of the screen's width
   },
-
+  needAnAccount: {
+    fontFamily: "Inter-Regular",
+    color: "#6c6c6c",
+  },
+  createOne: {
+    textDecorationLine: "underline",
+    fontFamily: "Inter-SemiBold",
+    color: colors.Royalblue,
+    fontSize: 18,
+    position: "absolute",
+    top: screenHeight * 0.54,
+    left: screenWidth * 0.38,
+  },
+  needAnAccountContainer: {
+    top: screenHeight * 0.85,
+    left: screenWidth * 0.05,
+    fontSize: 18,
+    lineHeight: 27,
+    textAlign: "center",
+    width: screenWidth * 0.9,
+    position: "absolute",
+  },
   or: {
     top: screenHeight * 0.4,
     right: screenWidth * 0.06,
