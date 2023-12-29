@@ -57,95 +57,97 @@ function SignIn() {
     return null;
   }
   return (
-    <View style={styles.signin}>
-      <Image
-        source={require("../assets/images/logo.png")}
-        style={styles.logo}
-      />
+    <SafeAreaView>
       <View>
-        <Text style={styles.text}>Sign In</Text>
-        <View style={[styles.input, styles.inputSpaceBlock]}>
-          <TextInput
-            style={[styles.tasktrackinghcmuteduvn, styles.textClr]}
-            placeholder="Type your email here"
-            keyboardType="email-address"
-          />
-          <View style={[styles.label, styles.orFlexBox]}>
-            <Text style={[styles.email, styles.emailTypo]}>Email</Text>
+        <Image
+          source={require("../assets/images/logo.png")}
+          style={styles.logo}
+        />
+        <View>
+          <Text style={styles.text}>Sign In</Text>
+          <View style={[styles.input, styles.inputSpaceBlock]}>
+            <TextInput
+              style={[styles.tasktrackinghcmuteduvn, styles.textClr]}
+              placeholder="Type your email here"
+              keyboardType="email-address"
+            />
+            <View style={[styles.label, styles.orFlexBox]}>
+              <Text style={[styles.email, styles.emailTypo]}>Email</Text>
+            </View>
           </View>
-        </View>
-        <View style={[styles.input1, styles.input1FlexBox]}>
-          <TextInput
-            style={[styles.password, styles.textLayout]}
-            placeholder="Password"
-            secureTextEntry={!visible}
-          />
-          <TouchableOpacity onPress={() => setvisible(!visible)}>
-            <Image
-              style={[styles.eyeOffIcon, styles.iconLayout]}
-              contentFit="cover"
-              source={
-                visible
-                  ? require("../assets/images/nonhide.png")
-                  : require("../assets/images/hide.png")
-              }
+          <View style={[styles.input1, styles.input1FlexBox]}>
+            <TextInput
+              style={[styles.password, styles.textLayout]}
+              placeholder="Password"
+              secureTextEntry={!visible}
             />
-          </TouchableOpacity>
-        </View>
-        <View style={[styles.keep, styles.orFlexBox]}>
-          <TouchableOpacity onPress={() => setIsChecked(!isChecked)}>
-            <Image
-              style={styles.iconLayout}
-              contentFit="cover"
-              source={
-                isChecked
-                  ? require("../assets/images/squarewithtick.png")
-                  : require("../assets/images/square.png")
-              }
-            />
-          </TouchableOpacity>
-          <Text style={[styles.keepMeLogged, styles.textClr]}>
-            Keep me logged in
-          </Text>
-        </View>
-        <TouchableOpacity
-          onPress={() => {
-            //signinfunction
-          }}
-        >
-          <View style={[styles.button, styles.input1FlexBox]}>
-            <Text style={[styles.signIn2, styles.signIn2Typo]}>Sign in</Text>
+            <TouchableOpacity onPress={() => setvisible(!visible)}>
+              <Image
+                style={[styles.eyeOffIcon, styles.iconLayout]}
+                contentFit="cover"
+                source={
+                  visible
+                    ? require("../assets/images/nonhide.png")
+                    : require("../assets/images/hide.png")
+                }
+              />
+            </TouchableOpacity>
           </View>
-        </TouchableOpacity>
-        <View style={[styles.or, styles.orFlexBox]}>
-          <Image
-            style={[styles.orItemLayout]}
-            contentFit="cover"
-            source={require("../assets/images/signinwith.png")}
-          />
-        </View>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <TouchableOpacity>
-            <Image
-              style={styles.facebook}
-              source={require("../assets/images/logofb.png")}
-            />
+          <View style={[styles.keep, styles.orFlexBox]}>
+            <TouchableOpacity onPress={() => setIsChecked(!isChecked)}>
+              <Image
+                style={styles.iconLayout}
+                contentFit="cover"
+                source={
+                  isChecked
+                    ? require("../assets/images/squarewithtick.png")
+                    : require("../assets/images/square.png")
+                }
+              />
+            </TouchableOpacity>
+            <Text style={[styles.keepMeLogged, styles.textClr]}>
+              Keep me logged in
+            </Text>
+          </View>
+          <TouchableOpacity
+            onPress={() => {
+              //signinfunction
+            }}
+          >
+            <View style={[styles.button, styles.input1FlexBox]}>
+              <Text style={[styles.signIn2, styles.signIn2Typo]}>Sign in</Text>
+            </View>
           </TouchableOpacity>
-          <TouchableOpacity>
+          <View style={[styles.or, styles.orFlexBox]}>
             <Image
-              style={styles.linked}
-              source={require("../assets/images/logolinked.png")}
+              style={[styles.orItemLayout]}
+              contentFit="cover"
+              source={require("../assets/images/signinwith.png")}
             />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Image
-              style={styles.google}
-              source={require("../assets/images/logogoogle.png")}
-            />
-          </TouchableOpacity>
+          </View>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <TouchableOpacity>
+              <Image
+                style={styles.facebook}
+                source={require("../assets/images/logofb.png")}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Image
+                style={styles.linked}
+                source={require("../assets/images/logolinked.png")}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Image
+                style={styles.google}
+                source={require("../assets/images/logogoogle.png")}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
@@ -156,27 +158,27 @@ const styles = StyleSheet.create({
     left: screenWidth * 0.15,
   },
   facebook: {
-    width: screenWidth * 0.1, // 10% of the screen's width
-    height: screenHeight * 0.05, // 5% of the screen's height
-    top: screenHeight * 0.4, // 40% of the screen's height
-    left: screenWidth * 0.2, // 20% of the screen's width
+    width: screenWidth * 0.12, // 10% of the screen's width
+    height: screenHeight * 0.06, // 5% of the screen's height
+    top: screenHeight * 0.45, // 40% of the screen's height
+    left: screenWidth * 0.18, // 20% of the screen's width
   },
   linked: {
-    width: screenWidth * 0.1, // 10% of the screen's width
-    height: screenHeight * 0.05, // 5% of the screen's height
-    top: screenHeight * 0.4, // 40% of the screen's height
-    left: screenWidth * 0.35, // 35% of the screen's width
+    width: screenWidth * 0.12, // 10% of the screen's width
+    height: screenHeight * 0.06, // 5% of the screen's height
+    top: screenHeight * 0.45, // 40% of the screen's height
+    left: screenWidth * 0.3, // 35% of the screen's width
   },
   google: {
-    width: screenWidth * 0.1, // 10% of the screen's width
-    height: screenHeight * 0.05, // 5% of the screen's height
-    top: screenHeight * 0.4, // 40% of the screen's height
-    left: screenWidth * 0.5, // 50% of the screen's width
+    width: screenWidth * 0.12, // 10% of the screen's width
+    height: screenHeight * 0.06, // 5% of the screen's height
+    top: screenHeight * 0.45, // 40% of the screen's height
+    left: screenWidth * 0.42, // 50% of the screen's width
   },
 
   or: {
-    top: 289,
-    left: -6,
+    top: screenHeight * 0.4,
+    right: screenWidth * 0.06,
     width: 363,
     height: 22,
   },
@@ -219,8 +221,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   keep: {
-    top: 179,
-    right: 109,
+    top: screenHeight * 0.27,
+    right: screenWidth * 0.28,
   },
   textClr: {
     color: colors.colorGray,
@@ -234,7 +236,7 @@ const styles = StyleSheet.create({
     position: "absolute",
   },
   textLayout: {
-    lineHeight: 27,
+    lineHeight: screenHeight * 0.027,
     fontSize: 18,
   },
   iconLayout: {
@@ -250,6 +252,7 @@ const styles = StyleSheet.create({
     fontFamily: "Inter-Bold",
     fontSize: 40,
     position: "absolute",
+    left: screenWidth * 0.35,
   },
   password: {
     color: "#232323",
@@ -273,11 +276,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   input1: {
-    top: 104,
-    right: 4,
+    top: screenHeight * 0.167,
+    right: screenWidth * 0.05,
     borderColor: "#d9d9d9",
-    borderWidth: 1,
-    width: 353,
+    borderWidth: screenHeight * 0.002,
+    width: screenWidth * 0.9,
     padding: Padding.p_base,
     borderStyle: "solid",
   },
@@ -288,19 +291,19 @@ const styles = StyleSheet.create({
     textAlign: "left",
   },
   button: {
-    top: 223,
-    right: 8,
+    top: screenHeight * 0.32,
+    right: screenWidth * 0.05,
     backgroundColor: colors.Royalblue,
-    width: 345,
+    width: screenWidth * 0.9,
     paddingHorizontal: 8,
     paddingVertical: Padding.p_base,
   },
   input: {
-    top: 19,
-    right: 0,
+    top: screenHeight * 0.08,
+    right: screenWidth * 0.05,
     borderColor: colors.Royalblue,
     borderWidth: 1.5,
-    width: 356,
+    width: screenWidth * 0.9,
     borderRadius: Border.br_3xs,
     padding: Padding.p_base,
     borderStyle: "solid",
@@ -308,20 +311,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     position: "absolute",
   },
-  orFlexBox: {
-    alignItems: "center",
-    flexDirection: "row",
-    position: "absolute",
-  },
+
   emailTypo: {
     fontFamily: "Inter-Medium",
     fontWeight: "500",
-  },
-  orItemLayout: {
-    maxHeight: "100%",
-    maxWidth: "100%",
-    overflow: "hidden",
-    flex: 1,
   },
 });
 export default SignIn;
