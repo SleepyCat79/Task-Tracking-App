@@ -29,9 +29,27 @@ const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
 
 function SignUp() {
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [name, setName] = React.useState("");
+  const [passwordagain, setPasswordagain] = React.useState("");
   const navigation = useNavigation();
   const [visible, setvisible] = React.useState(false);
   const [fontsLoaded, setFontsLoaded] = React.useState(false);
+  const handleSignup = () => {
+    if (
+      name === "" ||
+      email === "" ||
+      password === "" ||
+      passwordagain === ""
+    ) {
+      alert("Please fill all the fields");
+    } else if (password !== passwordagain) {
+      alert("Passwords do not match");
+    } else {
+      alert("Sign up successful");
+    }
+  };
   React.useEffect(() => {
     async function prepare() {
       try {
@@ -69,6 +87,8 @@ function SignUp() {
             style={[styles.textClr]}
             placeholder="Type your full name here"
             keyboardType="ascii-capable"
+            value={name}
+            onChangeText={setName}
           />
           <View style={[styles.label, styles.orFlexBox]}>
             <Text style={[styles.email, styles.emailTypo]}>Full Name</Text>
@@ -79,6 +99,8 @@ function SignUp() {
             style={[styles.textClr]}
             placeholder="Type your email here"
             keyboardType="email-address"
+            value={email}
+            onChangeText={setEmail}
           />
           <View style={[styles.label, styles.orFlexBox]}>
             <Text style={[styles.email, styles.emailTypo]}>Email</Text>
@@ -89,6 +111,8 @@ function SignUp() {
             style={[styles.password, styles.textLayout]}
             placeholder="Password"
             secureTextEntry={!visible}
+            value={password}
+            onChangeText={setPassword}
           />
           <TouchableOpacity onPress={() => setvisible(!visible)}>
             <Image
@@ -107,6 +131,8 @@ function SignUp() {
             style={[styles.password, styles.textLayout]}
             placeholder="Confirm your password"
             secureTextEntry={!visible}
+            value={passwordagain}
+            onChangeText={setPasswordagain}
           />
           <TouchableOpacity onPress={() => setvisible(!visible)}>
             <Image
@@ -120,7 +146,7 @@ function SignUp() {
             />
           </TouchableOpacity>
         </View>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleSignup}>
           <View style={[styles.button, styles.input1FlexBox]}>
             <Text style={[styles.signIn2, styles.signIn2Typo]}>Sign up</Text>
           </View>

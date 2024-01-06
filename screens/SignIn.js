@@ -30,11 +30,20 @@ const screenHeight = Dimensions.get("window").height;
 
 function SignIn() {
   const navigation = useNavigation();
-
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
   const [fontsLoaded, setFontsLoaded] = React.useState(false);
   const [visible, setvisible] = React.useState(false);
   const [isChecked, setIsChecked] = React.useState(false);
-
+  const handleSignIn = () => {
+    // Check if email or password is empty
+    if (email === "" || password === "") {
+      // If either is empty, alert the user
+      alert("Please log in");
+    } else {
+      navigation.navigate("MaintainScreen");
+    }
+  };
   React.useEffect(() => {
     async function prepare() {
       try {
@@ -72,6 +81,8 @@ function SignIn() {
             style={[styles.textClr]}
             placeholder="Type your email here"
             keyboardType="email-address"
+            value={email}
+            onChangeText={setEmail}
           />
           <View style={[styles.label, styles.orFlexBox]}>
             <Text style={[styles.email, styles.emailTypo]}>Email</Text>
@@ -82,6 +93,8 @@ function SignIn() {
             style={[styles.password, styles.textLayout]}
             placeholder="Password"
             secureTextEntry={!visible}
+            value={password}
+            onChangeText={setPassword}
           />
           <TouchableOpacity onPress={() => setvisible(!visible)}>
             <Image
@@ -111,11 +124,7 @@ function SignIn() {
             Keep me logged in
           </Text>
         </View>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate("MaintainScreen");
-          }}
-        >
+        <TouchableOpacity onPress={handleSignIn}>
           <View style={[styles.button, styles.input1FlexBox]}>
             <Text style={[styles.signIn2, styles.signIn2Typo]}>Sign in</Text>
           </View>

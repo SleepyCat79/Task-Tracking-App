@@ -11,7 +11,7 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ScaledSheet } from "react-native-size-matters";
+import { ScaledSheet, scale } from "react-native-size-matters";
 import * as Font from "expo-font";
 import colors from "../assets/colors/color";
 import * as SplashScreen from "expo-splash-screen";
@@ -26,6 +26,7 @@ async function loadFonts() {
   });
 }
 let username = "Task Tracking";
+let taskdate = "Jan 3, 2024";
 function Home({ navigation }) {
   const [data, SetData] = React.useState([1, 1, 1, 1, 1]);
   const [currentIndex, setCurrentIndex] = React.useState(0);
@@ -72,10 +73,22 @@ function Home({ navigation }) {
             <View style={styles.slidercontain}>
               <TouchableOpacity style={styles.slider}>
                 <View style={styles.sliderdate}>
-                  <Text style={styles.sliderdatetext}>Jan 3, 2024</Text>
+                  <Text style={styles.sliderdatetext}>{taskdate}</Text>
                 </View>
                 <Text style={styles.slidertext}>Task name here</Text>
-                <Progress.Bar progress={0.3} width={200} />
+                <Text style={styles.slidertext2}>Progress</Text>
+                <Progress.Bar
+                  progress={0.7}
+                  width={scale(160)}
+                  height={scale(4)}
+                  borderRadius={scale(6)}
+                  marginLeft={scale(7)}
+                  marginTop={scale(3)}
+                  unfilledColor="#000000"
+                  borderWidth={0}
+                  color="#FFFFFF"
+                />
+                <Text style={styles.slidertext3}>80%</Text>
               </TouchableOpacity>
             </View>
           );
@@ -149,6 +162,21 @@ const styles = ScaledSheet.create({
     fontFamily: "Inter-Bold",
     paddingLeft: "13@s",
     paddingTop: "13@s",
+  },
+  slidertext2: {
+    fontSize: "12@s",
+    color: colors.white,
+    fontFamily: "Inter-Bold",
+    paddingLeft: "10@s",
+    paddingTop: "12@s",
+  },
+  slidertext3: {
+    fontSize: "8@s",
+    color: colors.white,
+    fontFamily: "Inter-Bold",
+    paddingLeft: "170@s",
+    paddingTop: "103@s",
+    position: "absolute",
   },
 });
 export default Home;
