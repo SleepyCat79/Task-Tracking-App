@@ -75,25 +75,34 @@ function Home({ navigation }) {
                 <View style={styles.sliderdate}>
                   <Text style={styles.sliderdatetext}>{taskdate}</Text>
                 </View>
+
                 <Text style={styles.slidertext}>Task name here</Text>
                 <Text style={styles.slidertext2}>Progress</Text>
-                <Progress.Bar
-                  progress={0.7}
-                  width={scale(160)}
-                  height={scale(4)}
-                  borderRadius={scale(6)}
-                  marginLeft={scale(7)}
-                  marginTop={scale(3)}
-                  unfilledColor="#000000"
-                  borderWidth={0}
-                  color="#FFFFFF"
-                />
-                <Text style={styles.slidertext3}>80%</Text>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Progress.Bar
+                    progress={0.7}
+                    width={scale(160)}
+                    height={scale(6)}
+                    borderRadius={scale(6)}
+                    marginLeft={scale(7)}
+                    marginTop={scale(6)}
+                    unfilledColor="#000000"
+                    borderWidth={0}
+                    color="#FFFFFF"
+                  />
+                  <Text style={styles.slidertext3}>80%</Text>
+                </View>
               </TouchableOpacity>
             </View>
           );
         }}
       />
+      {/* slider */}
 
       <View
         style={{
@@ -116,6 +125,29 @@ function Home({ navigation }) {
             ></View>
           );
         })}
+      </View>
+      <View style={styles.mainpage}>
+        <Text style={styles.pagetext}>You have 100 tasks to be done!</Text>
+        <View style={styles.pagetext2}>
+          <Text style={styles.subtext}>Finish the landing.</Text>
+          <Text style={styles.subtext}>Done the front end.</Text>
+          <Text style={styles.subtext}>Get the function ready.</Text>
+        </View>
+        <Text style={styles.pagetext}>
+          97 more tasks are waiting for you...
+        </Text>
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          <TouchableOpacity>
+            <View style={styles.button}>
+              <Text style={styles.check}>Check tasklist</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <View style={styles.button2}>
+              <Text style={styles.check2}>Workspace</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -174,9 +206,64 @@ const styles = ScaledSheet.create({
     fontSize: "8@s",
     color: colors.white,
     fontFamily: "Inter-Bold",
-    paddingLeft: "170@s",
-    paddingTop: "103@s",
-    position: "absolute",
+    paddingRight: "3@s",
+  },
+  mainpage: {
+    alignSelf: "center",
+    width: "320@s",
+    height: "320@s",
+    backgroundColor: colors.darkblue,
+    borderRadius: "40@s",
+    marginTop: "20@s",
+  },
+  pagetext: {
+    fontSize: "16@s",
+    color: colors.white,
+    fontFamily: "Inter-Bold",
+    textAlign: "center",
+    paddingTop: "16@s",
+  },
+  pagetext2: {
+    alignSelf: "center",
+    paddingTop: "16@s",
+  },
+  subtext: {
+    fontSize: "16@s",
+    color: colors.white,
+    fontFamily: "Inter-Bold",
+    paddingBottom: "12@s",
+  },
+  button: {
+    width: "140@s",
+    height: "50@s",
+    backgroundColor: colors.white,
+    marginTop: "30@s",
+    marginLeft: "10@s",
+    borderRadius: "20@s",
+  },
+  button2: {
+    width: "140@s",
+    height: "50@s",
+    backgroundColor: colors.darkblue,
+    marginTop: "30@s",
+    marginRight: "10@s",
+    borderRadius: "20@s",
+    borderColor: colors.white,
+    borderWidth: "2@s",
+  },
+  check: {
+    fontSize: "16@s",
+    color: colors.darkblue,
+    fontFamily: "Inter-Bold",
+    textAlign: "center",
+    paddingTop: "13@s",
+  },
+  check2: {
+    fontSize: "16@s",
+    color: colors.white,
+    fontFamily: "Inter-Bold",
+    textAlign: "center",
+    paddingTop: "12@s",
   },
 });
 export default Home;
