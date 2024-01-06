@@ -13,6 +13,7 @@ import colors from "../assets/colors/color";
 import * as Font from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { Dimensions } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 import { Padding, Border } from "../assets/globalstyle";
 //font install
@@ -28,6 +29,8 @@ const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
 
 function SignIn() {
+  const navigation = useNavigation();
+
   const [fontsLoaded, setFontsLoaded] = React.useState(false);
   const [visible, setvisible] = React.useState(false);
   const [isChecked, setIsChecked] = React.useState(false);
@@ -64,9 +67,9 @@ function SignIn() {
       />
       <View>
         <Text style={styles.text}>Sign In</Text>
-        <View style={[styles.input, styles.inputSpaceBlock]}>
+        <View style={[styles.input]}>
           <TextInput
-            style={[styles.tasktrackinghcmuteduvn, styles.textClr]}
+            style={[styles.textClr]}
             placeholder="Type your email here"
             keyboardType="email-address"
           />
@@ -110,7 +113,7 @@ function SignIn() {
         </View>
         <TouchableOpacity
           onPress={() => {
-            //signinfunction
+            navigation.navigate("MaintainScreen");
           }}
         >
           <View style={[styles.button, styles.input1FlexBox]}>
@@ -145,12 +148,14 @@ function SignIn() {
           </TouchableOpacity>
         </View>
       </View>
-      <Text style={styles.needAnAccountContainer}>
-        <Text style={styles.needAnAccount}>{`Need an account? `}</Text>
-      </Text>
-      <TouchableOpacity>
-        <Text style={styles.createOne}>Create one</Text>
-      </TouchableOpacity>
+      <View>
+        <Text style={styles.needAnAccountContainer}>
+          <Text style={styles.needAnAccount}>{`Need an account? `}</Text>
+        </Text>
+        <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
+          <Text style={styles.createOne}>Create one</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -190,11 +195,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     position: "absolute",
     top: screenHeight * 0.54,
-    left: screenWidth * 0.38,
+    left: screenWidth * 0.58,
   },
   needAnAccountContainer: {
-    top: screenHeight * 0.85,
-    left: screenWidth * 0.05,
+    top: screenHeight * 0.54,
+    left: screenWidth * -0.08,
     fontSize: 18,
     lineHeight: 27,
     textAlign: "center",
@@ -277,7 +282,7 @@ const styles = StyleSheet.create({
     fontFamily: "Inter-Bold",
     fontSize: 40,
     position: "absolute",
-    left: screenWidth * 0.35,
+    left: screenWidth * 0.3,
   },
   password: {
     color: "#232323",
