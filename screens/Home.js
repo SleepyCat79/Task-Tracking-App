@@ -142,7 +142,7 @@ function Home({ navigation }) {
               <Text style={styles.check}>Check tasklist</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate("Workspace")}>
             <View style={styles.button2}>
               <Text style={styles.check2}>Workspace</Text>
             </View>
