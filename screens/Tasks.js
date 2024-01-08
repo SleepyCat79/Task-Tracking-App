@@ -12,6 +12,8 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Ionicons from "react-native-vector-icons/Ionicons";
+
 import { ScaledSheet, scale } from "react-native-size-matters";
 import * as Font from "expo-font";
 import WorkspaceMaintain from "./WorkspaceMaintain";
@@ -29,6 +31,21 @@ async function loadFonts() {
 }
 
 function Tasks({ route, navigation }) {
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+  const [isPinned, setIsPinned] = React.useState(false);
   const [fontsLoaded, setFontsLoaded] = React.useState(false);
   const { workspaceId } = route.params;
   const { workspaceList, setWorkspaceList } =
@@ -47,7 +64,12 @@ function Tasks({ route, navigation }) {
     if (task === "") {
       return;
     }
-    const newTask = { id: (taskList.length + 1).toString(), title: task };
+    const newTask = {
+      id: (taskList.length + 1).toString(),
+      title: task,
+      day: new Date().getDate(),
+      month: monthNames[new Date().getMonth()],
+    };
     setTaskList([...taskList, newTask]);
     const updatedWorkspaceList = workspaceList.map((ws) =>
       ws.id === workspaceId ? { ...ws, tasks: [...ws.tasks, newTask] } : ws
@@ -58,18 +80,61 @@ function Tasks({ route, navigation }) {
 
   const rendertask = ({ item, index }) => {
     return (
-      <TouchableOpacity style={styles.workspacelist}>
-        <Text
-          style={{
-            color: colors.black,
-            fontFamily: "Inter-Bold",
-            fontSize: scale(22),
-            marginLeft: scale(10),
-          }}
-        >
-          {item.title}
-        </Text>
-      </TouchableOpacity>
+      <View
+        style={{
+          flexDirection: "column",
+          height: scale(165),
+        }}
+      >
+        <TouchableOpacity style={styles.workspacelist}>
+          <Text
+            style={{
+              color: colors.black,
+              fontFamily: "Inter-SemiBold",
+              fontSize: scale(18),
+              marginLeft: scale(20),
+              marginTop: scale(20),
+            }}
+          >
+            {item.title}
+          </Text>
+          <TouchableOpacity style={styles.username}>
+            <Text style={{ color: colors.white, fontFamily: "Inter-SemiBold" }}>
+              Username
+            </Text>
+          </TouchableOpacity>
+        </TouchableOpacity>
+        <View style={styles.tasktools}>
+          <TouchableOpacity>
+            <Ionicons
+              name="attach"
+              size={30}
+              color="#000"
+              style={{ marginLeft: scale(10) }}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setIsPinned(!isPinned)}>
+            <Ionicons
+              name={isPinned ? "pin" : "pin-outline"}
+              color={isPinned ? "red" : "#000"}
+              size={30}
+              style={{ marginLeft: scale(10) }}
+            />
+          </TouchableOpacity>
+          <View
+            style={{
+              marginLeft: scale(10),
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <Ionicons name="time-sharp" size={30} />
+            <Text style={{ fontFamily: "Inter-Bold" }}>
+              {item.month} {item.day}
+            </Text>
+          </View>
+        </View>
+      </View>
     );
   };
 
@@ -98,7 +163,7 @@ function Tasks({ route, navigation }) {
     return null;
   }
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.white }}>
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
         <View
           style={{
@@ -130,7 +195,7 @@ function Tasks({ route, navigation }) {
           <Text style={{ color: colors.white }}>Add</Text>
         </TouchableOpacity>
       </View>
-      <View style={{ marginBottom: scale(200) }}>
+      <View style={{ marginBottom: scale(100) }}>
         <FlatList data={taskList} renderItem={rendertask} />
       </View>
     </SafeAreaView>
@@ -145,11 +210,48 @@ const styles = ScaledSheet.create({
     paddingHorizontal: "16@s",
   },
   workspacelist: {
-    width: "390@s",
+    backgroundColor: "#fff",
+    width: "340@s",
     height: "100@s",
-    backgroundColor: "rgba(3, 78, 133, 0.07)",
+    shadowColor: "#000",
+    alignSelf: "center",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.13,
+    shadowRadius: 2.2,
+    elevation: 3,
     marginTop: "16@s",
     marginBottom: "10@s",
+  },
+  username: {
+    width: "100@s",
+    height: "25@s",
+    borderRadius: "5@s",
+    backgroundColor: "#008BEF",
+    marginTop: "5@s",
+    marginLeft: "20@s",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  tasktools: {
+    flexDirection: "row",
+    position: "absolute",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    width: "340@s",
+    height: "40@s",
+    shadowColor: "#000",
+    alignSelf: "center",
+    marginTop: "120@s",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.07,
+    shadowRadius: 2.2,
+    elevation: 3,
   },
 });
 

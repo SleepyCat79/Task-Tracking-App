@@ -69,6 +69,19 @@ function Workspace({ navigation }) {
         >
           {item.title}
         </Text>
+        <View style={styles.taskshow}>
+          <Text
+            style={{
+              color: colors.white,
+              textAlign: "center",
+              fontSize: scale(13),
+              fontStyle: "italic",
+              fontFamily: "Inter-Bold",
+            }}
+          >
+            {item.tasks.length} Tasks left
+          </Text>
+        </View>
       </TouchableOpacity>
     );
   };
@@ -98,7 +111,7 @@ function Workspace({ navigation }) {
     return null;
   }
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.white }}>
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
         <View
           style={{
@@ -130,7 +143,7 @@ function Workspace({ navigation }) {
           <Text style={{ color: colors.white }}>Add</Text>
         </TouchableOpacity>
       </View>
-      <View style={{ marginBottom: scale(200) }}>
+      <View style={{ marginBottom: scale(100) }}>
         <FlatList data={workspaceList} renderItem={renderworkspace} />
       </View>
     </SafeAreaView>
@@ -150,6 +163,13 @@ const styles = ScaledSheet.create({
     backgroundColor: "rgba(3, 78, 133, 0.07)",
     marginTop: "16@s",
     marginBottom: "10@s",
+  },
+  taskshow: {
+    width: "120@s",
+    backgroundColor: colors.darkblue,
+    borderRadius: "20@s",
+    marginTop: "50@s",
+    marginLeft: "5@s",
   },
 });
 export default Workspace;
