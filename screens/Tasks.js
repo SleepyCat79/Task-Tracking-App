@@ -15,7 +15,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { ScaledSheet, scale } from "react-native-size-matters";
 import * as Font from "expo-font";
 import WorkspaceMaintain from "./WorkspaceMaintain";
-
 import colors from "../assets/colors/color";
 import * as SplashScreen from "expo-splash-screen";
 import * as Progress from "react-native-progress";
@@ -29,36 +28,37 @@ async function loadFonts() {
   });
 }
 
-function Workspace({ navigation }) {
-  const [workspace, setWorkspace] = React.useState("");
+function Tasks({ route, navigation }) {
+  const [fontsLoaded, setFontsLoaded] = React.useState(false);
+  const { workspaceId } = route.params;
   const { workspaceList, setWorkspaceList } =
     React.useContext(WorkspaceMaintain);
-  const [fontsLoaded, setFontsLoaded] = React.useState(false);
-  const handleAddWorkspace = () => {
-    if (workspace === "") {
+  const [task, setTask] = React.useState("");
+  const [taskList, setTaskList] = React.useState([]);
+
+  React.useEffect(() => {
+    const workspace = workspaceList.find((ws) => ws.id === workspaceId);
+    if (workspace) {
+      setTaskList(workspace.tasks);
+    }
+  }, [workspaceList, workspaceId]);
+
+  const handleAddTask = () => {
+    if (task === "") {
       return;
     }
-    setWorkspaceList([
-      ...workspaceList,
-      {
-        id: (workspaceList.length + 1).toString(),
-        title: workspace,
-        tasks: [],
-      },
-    ]);
-    setWorkspace("");
+    const newTask = { id: (taskList.length + 1).toString(), title: task };
+    setTaskList([...taskList, newTask]);
+    const updatedWorkspaceList = workspaceList.map((ws) =>
+      ws.id === workspaceId ? { ...ws, tasks: [...ws.tasks, newTask] } : ws
+    );
+    setWorkspaceList(updatedWorkspaceList);
+    setTask("");
   };
 
-  const renderworkspace = ({ item, index }) => {
+  const rendertask = ({ item, index }) => {
     return (
-      <TouchableOpacity
-        style={styles.workspacelist}
-        onPress={() =>
-          navigation.navigate("Tasks", {
-            workspaceId: item.id,
-          })
-        }
-      >
+      <TouchableOpacity style={styles.workspacelist}>
         <Text
           style={{
             color: colors.black,
@@ -110,9 +110,9 @@ function Workspace({ navigation }) {
         >
           <TextInput
             style={styles.addworkspace}
-            placeholder="Add Workspace"
-            value={workspace}
-            onChangeText={(text) => setWorkspace(text)}
+            placeholder="Add Task"
+            value={task}
+            onChangeText={(text) => setTask(text)}
           ></TextInput>
         </View>
         <TouchableOpacity
@@ -125,13 +125,13 @@ function Workspace({ navigation }) {
             alignItems: "center",
             justifyContent: "center",
           }}
-          onPress={() => handleAddWorkspace()}
+          onPress={() => handleAddTask()}
         >
           <Text style={{ color: colors.white }}>Add</Text>
         </TouchableOpacity>
       </View>
       <View style={{ marginBottom: scale(200) }}>
-        <FlatList data={workspaceList} renderItem={renderworkspace} />
+        <FlatList data={taskList} renderItem={rendertask} />
       </View>
     </SafeAreaView>
   );
@@ -152,4 +152,5 @@ const styles = ScaledSheet.create({
     marginBottom: "10@s",
   },
 });
-export default Workspace;
+
+export default Tasks;
