@@ -2,19 +2,22 @@ import * as React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 
 // Screens
 import Home from "./Home";
 import Workspace from "./Workspace";
 import Tasks from "./Tasks";
+import Creatingtasks from "./Creatingtasks";
 //Screen names
 const homeName = "Home";
 const workspaceName = "Workspace";
 const taskName = "Tasks";
+const creating = "Creatingtasks";
 
 const Tab = createBottomTabNavigator();
 
-function MaintainScreen() {
+function MaintainScreen({ route, navigation }) {
   return (
     <Tab.Navigator
       initialRouteName={homeName}
@@ -29,6 +32,8 @@ function MaintainScreen() {
             iconName = focused ? "mail" : "mail-outline";
           } else if (rn === taskName) {
             iconName = focused ? "albums" : "albums-outline";
+          } else if (rn === creating) {
+            iconName = focused ? "add-circle" : "add-circle-outline";
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -59,6 +64,14 @@ function MaintainScreen() {
         component={Workspace}
         options={{
           headerShown: false,
+        }}
+      />
+      <Tab.Screen
+        name={creating}
+        component={Creatingtasks}
+        options={{
+          headerShown: false,
+          tabBarStyle: { display: "none" },
         }}
       />
       <Tab.Screen

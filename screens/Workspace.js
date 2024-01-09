@@ -112,37 +112,6 @@ function Workspace({ navigation }) {
   }
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.white }}>
-      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-        <View
-          style={{
-            width: scale(300),
-            marginTop: scale(40),
-            height: scale(40),
-            paddingLeft: scale(10),
-          }}
-        >
-          <TextInput
-            style={styles.addworkspace}
-            placeholder="Add Workspace"
-            value={workspace}
-            onChangeText={(text) => setWorkspace(text)}
-          ></TextInput>
-        </View>
-        <TouchableOpacity
-          style={{
-            width: scale(40),
-            backgroundColor: "#000",
-            height: scale(40),
-            marginTop: scale(40),
-            marginRight: scale(5),
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-          onPress={() => handleAddWorkspace()}
-        >
-          <Text style={{ color: colors.white }}>Add</Text>
-        </TouchableOpacity>
-      </View>
       <View style={{ marginBottom: scale(100) }}>
         <FlatList data={workspaceList} renderItem={renderworkspace} />
       </View>
