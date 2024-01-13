@@ -36,6 +36,8 @@ function SignUp() {
   const navigation = useNavigation();
   const [visible, setvisible] = React.useState(false);
   const [fontsLoaded, setFontsLoaded] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState("");
+
   const handleSignup = () => {
     if (
       name === "" ||
@@ -43,13 +45,41 @@ function SignUp() {
       password === "" ||
       passwordagain === ""
     ) {
-      alert("Please fill all the fields");
+      setErrorMessage("Please fill all the fields");
     } else if (password !== passwordagain) {
-      alert("Passwords do not match");
+      setErrorMessage("Passwords do not match");
     } else {
-      alert("Sign up successful");
+      try {
+        fetch("http://10.0.2.2:8000/signup", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: name,
+            email: email,
+            password: password,
+          }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.error) {
+              if (data.error === "User already exists with that email") {
+                setErrorMessage("This email is already registered");
+              } else {
+                setErrorMessage(data.error);
+              }
+            } else {
+              console.log(data);
+              // handle successful signup here
+            }
+          });
+      } catch (err) {
+        console.log(err);
+      }
     }
   };
+
   React.useEffect(() => {
     async function prepare() {
       try {
@@ -158,6 +188,9 @@ function SignUp() {
           <TouchableOpacity onPress={() => navigation.navigate("SignIn")}>
             <Text style={styles.createOne}>Sign In here</Text>
           </TouchableOpacity>
+          {errorMessage ? (
+            <Text style={styles.error}>{errorMessage}</Text>
+          ) : null}
         </View>
       </View>
     </View>
@@ -317,6 +350,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     width: screenWidth * 0.9,
     position: "absolute",
+  },
+  error: {
+    color: "red",
+    top: screenHeight * 0.63,
+    fontFamily: "Inter-SemiBold",
+    fontSize: 18,
+    lineHeight: 27,
+    textAlign: "center",
+    justifyContent: "center",
   },
 });
 export default SignUp;

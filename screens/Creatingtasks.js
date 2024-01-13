@@ -53,51 +53,6 @@ function WorkspaceCreate() {
     setWorkspace("");
   };
 
-  const data = [
-    { label: "Item 1", value: "1" },
-    { label: "Item 2", value: "2" },
-    { label: "Item 3", value: "3" },
-    { label: "Item 4", value: "4" },
-    { label: "Item 5", value: "5" },
-    { label: "Item 6", value: "6" },
-    { label: "Item 7", value: "7" },
-    { label: "Item 8", value: "8" },
-  ];
-  const [value, setValue] = React.useState(null);
-  const [isFocus, setIsFocus] = React.useState(false);
-  const [date, setDate] = React.useState(new Date(1598051730000));
-  const [mode, setMode] = React.useState("date");
-  const [show, setShow] = React.useState(false);
-
-  const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate;
-    setShow(false);
-    setDate(currentDate);
-  };
-
-  const showMode = (currentMode) => {
-    setShow(true);
-    setMode(currentMode);
-  };
-
-  const showDatepicker = () => {
-    showMode("date");
-  };
-
-  const showTimepicker = () => {
-    showMode("time");
-  };
-
-  const renderLabel = () => {
-    if (value || isFocus) {
-      return (
-        <Text style={[styles.label, isFocus && { color: "blue" }]}>
-          Choose Workspace
-        </Text>
-      );
-    }
-    return null;
-  };
   return (
     <SafeAreaView
       style={{
@@ -138,39 +93,8 @@ function WorkspaceCreate() {
           }}
         />
       </View>
-      <View style={styles.container}>
-        {renderLabel()}
-        <Dropdown
-          style={[styles.dropdown, isFocus && { borderColor: "blue" }]}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          inputSearchStyle={styles.inputSearchStyle}
-          iconStyle={styles.iconStyle}
-          data={data}
-          search
-          maxHeight={300}
-          labelField="label"
-          valueField="value"
-          placeholder={!isFocus ? "Select item" : "..."}
-          searchPlaceholder="Search..."
-          value={value}
-          onFocus={() => setIsFocus(true)}
-          onBlur={() => setIsFocus(false)}
-          onChange={(item) => {
-            setValue(item.value);
-            setIsFocus(false);
-          }}
-          renderLeftIcon={() => (
-            <AntDesign
-              style={styles.icon}
-              color={isFocus ? "blue" : "black"}
-              name="database"
-              size={20}
-            />
-          )}
-        />
-      </View>
-      <View style={styles.input3}>
+
+      <View style={styles.input3a}>
         <TextInput
           placeholder="Tag"
           placeholderTextColor={colors.grey}
@@ -181,31 +105,9 @@ function WorkspaceCreate() {
           }}
         />
       </View>
-      <View style={{ flexDirection: "row" }}>
-        <Button onPress={showDatepicker} title="Show date picker!" />
-        <Button onPress={showTimepicker} title="Show time picker!" />
-        <Text>selected: {date.toLocaleString()}</Text>
-        {show && (
-          <DateTimePicker
-            testID="dateTimePicker"
-            value={date}
-            mode={mode}
-            is24Hour={true}
-            onChange={onChange}
-          />
-        )}
-      </View>
       <View>
         <TouchableOpacity
-          style={{
-            width: scale(40),
-            backgroundColor: "#000",
-            height: scale(40),
-            marginTop: scale(40),
-            marginRight: scale(5),
-            alignItems: "center",
-            justifyContent: "center",
-          }}
+          style={styles.addbutton}
           onPress={() => handleAddWorkspace()}
         >
           <Text style={{ color: colors.white }}>Add</Text>
@@ -335,7 +237,7 @@ function TaskCreate() {
           maxHeight={300}
           labelField="label"
           valueField="value"
-          placeholder={!isFocus ? "Select item" : "..."}
+          placeholder={!isFocus ? "Select workspace" : "..."}
           searchPlaceholder="Search..."
           value={value}
           onFocus={() => setIsFocus(true)}
@@ -365,10 +267,34 @@ function TaskCreate() {
           }}
         />
       </View>
-      <View style={{ flexDirection: "row" }}>
-        <Button onPress={showDatepicker} title="Show date picker!" />
-        <Button onPress={showTimepicker} title="Show time picker!" />
-        <Text>selected: {date.toLocaleString()}</Text>
+      <View style={styles.timebutton}>
+        <TouchableOpacity
+          style={styles.timepicker1}
+          onPress={() => showDatepicker()}
+        >
+          <Text style={{ fontFamily: "Inter-SemiBold" }}>
+            Set deadline Date
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.timepicker2}
+          onPress={() => showTimepicker()}
+        >
+          <Text style={{ fontFamily: "Inter-SemiBold" }}>
+            Set deadline Time
+          </Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.input1}>
+        <Text
+          style={{
+            textAlign: "center",
+            fontFamily: "Inter-Bold",
+            fontSize: scale(14),
+          }}
+        >
+          Deadline: {date.toLocaleString()}
+        </Text>
         {show && (
           <DateTimePicker
             testID="dateTimePicker"
@@ -381,15 +307,7 @@ function TaskCreate() {
       </View>
       <View>
         <TouchableOpacity
-          style={{
-            width: scale(40),
-            backgroundColor: "#000",
-            height: scale(40),
-            marginTop: scale(40),
-            marginRight: scale(5),
-            alignItems: "center",
-            justifyContent: "center",
-          }}
+          style={styles.addbutton}
           onPress={() => handleAddTask()}
         >
           <Text style={{ color: colors.white }}>Add</Text>
@@ -489,6 +407,16 @@ const styles = ScaledSheet.create({
     justifyContent: "center",
     borderRadius: "16@s",
   },
+  input3a: {
+    width: wp("85%"),
+    height: scale(50),
+    borderColor: colors.darkblue,
+    borderWidth: 1,
+    alignSelf: "center",
+    marginTop: "18@s",
+    justifyContent: "center",
+    borderRadius: "16@s",
+  },
   input2: {
     width: wp("85%"),
     height: scale(150),
@@ -539,6 +467,45 @@ const styles = ScaledSheet.create({
   },
   icon: {
     marginRight: 5,
+  },
+  addbutton: {
+    width: wp("90%"),
+    backgroundColor: "#000",
+    height: scale(40),
+    marginTop: scale(40),
+    marginRight: scale(5),
+    alignItems: "center",
+    alignSelf: "center",
+    justifyContent: "center",
+    backgroundColor: "#1E4D92",
+  },
+  timebutton: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  timepicker1: {
+    width: wp("35%"),
+    marginLeft: scale(25),
+    height: scale(40),
+    borderColor: colors.darkblue,
+    borderWidth: 1,
+    alignSelf: "center",
+    marginTop: "18@s",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: "16@s",
+  },
+  timepicker2: {
+    width: wp("35%"),
+    marginRight: scale(25),
+    height: scale(40),
+    borderColor: colors.darkblue,
+    borderWidth: 1,
+    alignSelf: "center",
+    marginTop: "18@s",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: "16@s",
   },
 });
 

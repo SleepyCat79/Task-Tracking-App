@@ -35,13 +35,40 @@ function SignIn() {
   const [fontsLoaded, setFontsLoaded] = React.useState(false);
   const [visible, setvisible] = React.useState(false);
   const [isChecked, setIsChecked] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState("");
+
   const handleSignIn = () => {
-    // Check if email or password is empty
     if (email === "" || password === "") {
-      // If either is empty, alert the user
-      alert("Please log in");
+      setErrorMessage("Please fill all the fields");
     } else {
-      navigation.navigate("MaintainScreen");
+      try {
+        fetch("http://10.0.2.2:8000/signin", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: email,
+            password: password,
+          }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.error) {
+              if (data.error === "Invalid Email or password") {
+                setErrorMessage("Invalid Email or password");
+              } else {
+                setErrorMessage(data.error);
+              }
+            } else {
+              navigation.navigate("MaintainScreen");
+            }
+          });
+      } catch (err) {
+        console.log(err);
+      }
+
+      //
     }
   };
   React.useEffect(() => {
@@ -164,6 +191,7 @@ function SignIn() {
         <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
           <Text style={styles.createOne}>Create one</Text>
         </TouchableOpacity>
+        {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
       </View>
     </View>
   );
@@ -354,6 +382,15 @@ const styles = StyleSheet.create({
   emailTypo: {
     fontFamily: "Inter-Medium",
     fontWeight: "500",
+  },
+  error: {
+    color: "red",
+    top: screenHeight * 0.49,
+    fontSize: 18,
+    lineHeight: 27,
+    textAlign: "center",
+    justifyContent: "center",
+    fontFamily: "Inter-SemiBold",
   },
 });
 export default SignIn;
