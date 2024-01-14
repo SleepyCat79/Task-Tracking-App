@@ -14,6 +14,7 @@ import * as Font from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { Dimensions } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import WorkspaceMaintain from "./WorkspaceMaintain";
 
 import { Padding, Border } from "../assets/globalstyle";
 //font install
@@ -29,9 +30,9 @@ const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
 
 function SignUp() {
-  const [email, setEmail] = React.useState("");
+  const { Name, setName, Email, setEmail } =
+    React.useContext(WorkspaceMaintain);
   const [password, setPassword] = React.useState("");
-  const [name, setName] = React.useState("");
   const [passwordagain, setPasswordagain] = React.useState("");
   const navigation = useNavigation();
   const [visible, setvisible] = React.useState(false);
@@ -40,8 +41,8 @@ function SignUp() {
 
   const handleSignup = () => {
     if (
-      name === "" ||
-      email === "" ||
+      Name === "" ||
+      Email === "" ||
       password === "" ||
       passwordagain === ""
     ) {
@@ -56,12 +57,12 @@ function SignUp() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            name: name,
-            email: email,
+            name: Name,
+            email: Email,
             password: password,
           }),
         })
-          .then((res) => res.json())
+          .then((res) => res.text())
           .then((data) => {
             if (data.error) {
               if (data.error === "User already exists with that email") {
@@ -117,7 +118,7 @@ function SignUp() {
             style={[styles.textClr]}
             placeholder="Type your full name here"
             keyboardType="ascii-capable"
-            value={name}
+            value={Name}
             onChangeText={setName}
           />
           <View style={[styles.label, styles.orFlexBox]}>
@@ -129,7 +130,7 @@ function SignUp() {
             style={[styles.textClr]}
             placeholder="Type your email here"
             keyboardType="email-address"
-            value={email}
+            value={Email}
             onChangeText={setEmail}
           />
           <View style={[styles.label, styles.orFlexBox]}>

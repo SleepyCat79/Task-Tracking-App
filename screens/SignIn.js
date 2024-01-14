@@ -14,8 +14,12 @@ import * as Font from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { Dimensions } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Padding, Border } from "../assets/globalstyle";
+import WorkspaceMaintain from "./WorkspaceMaintain";
+import { jwtDecode } from "jwt-decode";
+import base64 from "react-native-base64";
+
 //font install
 async function loadFonts() {
   await Font.loadAsync({
@@ -25,10 +29,13 @@ async function loadFonts() {
     "Inter-SemiBold": require("../assets/fonts/Inter-SemiBold.otf"),
   });
 }
+global.atob = base64.decode;
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
 
 function SignIn() {
+  const { UserId, setUserId, Name, setName } =
+    React.useContext(WorkspaceMaintain);
   const navigation = useNavigation();
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -36,6 +43,23 @@ function SignIn() {
   const [visible, setvisible] = React.useState(false);
   const [isChecked, setIsChecked] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState("");
+
+  React.useEffect(() => {
+    const checkLoginState = async () => {
+      const storedUserId = await AsyncStorage.getItem("userId");
+      const storedName = await AsyncStorage.getItem("name");
+      console.log("Stored user id:", storedUserId);
+      console.log("Stored name:", storedName);
+      if (storedUserId) {
+        setUserId(storedUserId);
+        setName(storedName);
+        // Navigate to the main screen
+        navigation.navigate("MaintainScreen");
+      }
+    };
+
+    checkLoginState();
+  }, []);
 
   const handleSignIn = () => {
     if (email === "" || password === "") {
@@ -61,6 +85,15 @@ function SignIn() {
                 setErrorMessage(data.error);
               }
             } else {
+              setName(data.name);
+              console.log("User name:", Name);
+              const decodedToken = jwtDecode(data.token);
+              setUserId(decodedToken.userId);
+              console.log(UserId);
+              if (isChecked) {
+                AsyncStorage.setItem("userId", UserId);
+                AsyncStorage.setItem("name", Name);
+              }
               navigation.navigate("MaintainScreen");
             }
           });

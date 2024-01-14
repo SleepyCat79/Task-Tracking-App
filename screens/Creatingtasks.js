@@ -36,21 +36,34 @@ async function loadFonts() {
 }
 function WorkspaceCreate() {
   const [workspace, setWorkspace] = React.useState("");
-  const { workspaceList, setWorkspaceList } =
+  const { workspaceList, setWorkspaceList, UserId, setUserId } =
     React.useContext(WorkspaceMaintain);
   const handleAddWorkspace = () => {
     if (workspace === "") {
       return;
     }
-    setWorkspaceList([
-      ...workspaceList,
-      {
-        id: (workspaceList.length + 1).toString(),
-        title: workspace,
-        tasks: [],
+    const newWorkspace = {
+      title: workspace,
+    };
+
+    fetch(`http://10.0.2.2:8000/createwp/${UserId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-    ]);
-    setWorkspace("");
+      body: JSON.stringify({
+        name: workspace,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Success:", data);
+        setWorkspaceList([...workspaceList, newWorkspace]);
+        setWorkspace("");
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   };
 
   return (
@@ -71,7 +84,7 @@ function WorkspaceCreate() {
       </Text>
       <View style={styles.input1}>
         <TextInput
-          placeholder="Task name"
+          placeholder="Workspace name"
           placeholderTextColor={colors.grey}
           value={workspace}
           onChangeText={(text) => setWorkspace(text)}
@@ -118,7 +131,7 @@ function WorkspaceCreate() {
 }
 
 function TaskCreate() {
-  const { workspaceList, setWorkspaceList } =
+  const { workspaceList, setWorkspaceList, UserId, setUserId } =
     React.useContext(WorkspaceMaintain);
   const [task, setTask] = React.useState("");
   const [taskList, setTaskList] = React.useState([]);

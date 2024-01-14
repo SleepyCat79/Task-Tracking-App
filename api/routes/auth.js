@@ -35,8 +35,8 @@ router.post("/signin", async (req, res) => {
   }
 
   if (user.password === password) {
-    const token = jwt.sign({ userId: user._id }, JWT_SECRET);
-    res.json("Time to go");
+    const token = jwt.sign({ userId: user._id }, JWT_SECRET); // Generate token
+    res.json({ token, name: user.name });
   } else {
     return res.status(422).json({ error: "Invalid Email or password" });
   }

@@ -10,9 +10,22 @@ const Stack = createNativeStackNavigator();
 
 function App() {
   const [workspaceList, setWorkspaceList] = React.useState([]);
-
+  const [UserId, setUserId] = React.useState(null);
+  const [Name, setName] = React.useState(null);
+  const [Email, setEmail] = React.useState(null);
   return (
-    <WorkspaceMaintain.Provider value={{ workspaceList, setWorkspaceList }}>
+    <WorkspaceMaintain.Provider
+      value={{
+        workspaceList,
+        setWorkspaceList,
+        UserId,
+        setUserId,
+        Name,
+        setName,
+        Email,
+        setEmail,
+      }}
+    >
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen

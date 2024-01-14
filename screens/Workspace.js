@@ -30,25 +30,22 @@ async function loadFonts() {
 }
 
 function Workspace({ navigation }) {
-  const [workspace, setWorkspace] = React.useState("");
   const { workspaceList, setWorkspaceList } =
     React.useContext(WorkspaceMaintain);
+  const { UserId, setUserId } = React.useContext(WorkspaceMaintain);
   const [fontsLoaded, setFontsLoaded] = React.useState(false);
-  const handleAddWorkspace = () => {
-    if (workspace === "") {
-      return;
-    }
-    setWorkspaceList([
-      ...workspaceList,
-      {
-        id: (workspaceList.length + 1).toString(),
-        title: workspace,
-        tasks: [],
-      },
-    ]);
-    setWorkspace("");
-  };
-
+  React.useEffect(() => {
+    fetch(`http://10.0.2.2:8000/getwp/${UserId}`)
+      .then((response) => response.json())
+      .then((data) => {
+        const { workspaces } = data;
+        console.log(workspaces);
+        setWorkspaceList(workspaces);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }, [UserId]);
   const renderworkspace = ({ item, index }) => {
     return (
       <TouchableOpacity
@@ -67,7 +64,7 @@ function Workspace({ navigation }) {
             marginLeft: scale(10),
           }}
         >
-          {item.title}
+          {item.name}
         </Text>
         <View style={styles.taskshow}>
           <Text
@@ -79,7 +76,7 @@ function Workspace({ navigation }) {
               fontFamily: "Inter-Bold",
             }}
           >
-            {item.tasks.length} Tasks left
+            {item.tasklist ? item.tasklist.length : 0} Tasks left{" "}
           </Text>
         </View>
       </TouchableOpacity>

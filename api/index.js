@@ -7,15 +7,20 @@ const port = 8000;
 const cors = require("cors");
 
 require("./models/Users");
+require("./models/Worklist");
+require("./models/Tasklist");
 const authRoutes = require("./routes/auth");
 const checkToken = require("./middleware/checkToken");
-
+const workspaceRoutes = require("./routes/workspace");
+const taskRoutes = require("./routes/task");
 app.use(cors());
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use(authRoutes);
+app.use(workspaceRoutes);
+app.use(taskRoutes);
 
 mongoose
   .connect(mongourl, {

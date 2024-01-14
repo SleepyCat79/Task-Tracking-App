@@ -15,6 +15,7 @@ import { ScaledSheet, scale } from "react-native-size-matters";
 import * as Font from "expo-font";
 import colors from "../assets/colors/color";
 import * as SplashScreen from "expo-splash-screen";
+import WorkspaceMaintain from "./WorkspaceMaintain";
 import * as Progress from "react-native-progress";
 async function loadFonts() {
   await Font.loadAsync({
@@ -25,9 +26,10 @@ async function loadFonts() {
     "Inter-Regular": require("../assets/fonts/Inter-Regular.otf"),
   });
 }
-let username = "Task Tracking";
 let taskdate = "Jan 3, 2024";
 function Home({ navigation }) {
+  const { UserId, setUserId, Name, setName } =
+    React.useContext(WorkspaceMaintain);
   const [data, SetData] = React.useState([1, 1, 1, 1, 1]);
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const [fontsLoaded, setFontsLoaded] = React.useState(false);
@@ -57,7 +59,7 @@ function Home({ navigation }) {
   }
   return (
     <SafeAreaView>
-      <Text style={styles.text}>Good morning, {username}</Text>
+      <Text style={styles.text}>Good morning, {Name}</Text>
       <FlatList
         data={data}
         showsHorizontalScrollIndicator={false}
