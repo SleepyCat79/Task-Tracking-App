@@ -13,7 +13,7 @@ import {
 } from "react-native-responsive-screen";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "react-native-vector-icons/Ionicons";
-
+import { useFocusEffect } from "@react-navigation/native";
 import { ScaledSheet, scale } from "react-native-size-matters";
 import * as Font from "expo-font";
 import WorkspaceMaintain from "./WorkspaceMaintain";
@@ -53,32 +53,26 @@ function Tasks({ route, navigation }) {
   const [task, setTask] = React.useState("");
   const [taskList, setTaskList] = React.useState([]);
 
-  React.useEffect(() => {
-    const workspace = workspaceList.find((ws) => ws.id === workspaceId);
-    if (workspace) {
-      setTaskList(workspace.tasks);
-    }
-  }, [workspaceList, workspaceId]);
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchData = async () => {
+        try {
+          const response = await fetch(
+            `http://10.0.2.2:8000/gettasks/${workspaceId}`
+          );
+          const data = await response.json();
+          setTaskList(data.tasks);
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      };
 
-  const handleAddTask = () => {
-    if (task === "") {
-      return;
-    }
-    const newTask = {
-      id: (taskList.length + 1).toString(),
-      title: task,
-      day: new Date().getDate(),
-      month: monthNames[new Date().getMonth()],
-    };
-    setTaskList([...taskList, newTask]);
-    const updatedWorkspaceList = workspaceList.map((ws) =>
-      ws.id === workspaceId ? { ...ws, tasks: [...ws.tasks, newTask] } : ws
-    );
-    setWorkspaceList(updatedWorkspaceList);
-    setTask("");
-  };
+      fetchData();
+    }, [workspaceId])
+  );
 
   const rendertask = ({ item, index }) => {
+    console.log(item);
     return (
       <View
         style={{
@@ -96,7 +90,7 @@ function Tasks({ route, navigation }) {
               marginTop: scale(20),
             }}
           >
-            {item.title}
+            {item.name}
           </Text>
           <TouchableOpacity style={styles.username}>
             <Text style={{ color: colors.white, fontFamily: "Inter-SemiBold" }}>
@@ -164,37 +158,9 @@ function Tasks({ route, navigation }) {
   }
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.white }}>
-      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-        <View
-          style={{
-            width: scale(300),
-            marginTop: scale(40),
-            height: scale(40),
-            paddingLeft: scale(10),
-          }}
-        >
-          <TextInput
-            style={styles.addworkspace}
-            placeholder="Add Task"
-            value={task}
-            onChangeText={(text) => setTask(text)}
-          ></TextInput>
-        </View>
-        <TouchableOpacity
-          style={{
-            width: scale(40),
-            backgroundColor: "#000",
-            height: scale(40),
-            marginTop: scale(40),
-            marginRight: scale(5),
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-          onPress={() => handleAddTask()}
-        >
-          <Text style={{ color: colors.white }}>Add</Text>
-        </TouchableOpacity>
-      </View>
+      <View
+        style={{ flexDirection: "row", justifyContent: "space-between" }}
+      ></View>
       <View style={{ marginBottom: scale(100) }}>
         <FlatList data={taskList} renderItem={rendertask} />
       </View>

@@ -36,8 +36,14 @@ async function loadFonts() {
 }
 function WorkspaceCreate() {
   const [workspace, setWorkspace] = React.useState("");
-  const { workspaceList, setWorkspaceList, UserId, setUserId } =
-    React.useContext(WorkspaceMaintain);
+  const {
+    workspaceList,
+    setWorkspaceList,
+    UserId,
+    setUserId,
+    refreshData,
+    setRefreshData,
+  } = React.useContext(WorkspaceMaintain);
   const handleAddWorkspace = () => {
     if (workspace === "") {
       return;
@@ -60,6 +66,7 @@ function WorkspaceCreate() {
         console.log("Success:", data);
         setWorkspaceList([...workspaceList, newWorkspace]);
         setWorkspace("");
+        setRefreshData(true);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -131,14 +138,20 @@ function WorkspaceCreate() {
 }
 
 function TaskCreate() {
-  const { workspaceList, setWorkspaceList, UserId, setUserId } =
-    React.useContext(WorkspaceMaintain);
+  const {
+    workspaceList,
+    setWorkspaceList,
+    UserId,
+    setUserId,
+    refreshData,
+    setRefreshData,
+  } = React.useContext(WorkspaceMaintain);
   const [task, setTask] = React.useState("");
   const [taskList, setTaskList] = React.useState([]);
   const [taskDescription, setTaskDescription] = React.useState("");
   const data = workspaceList.map((workspace, index) => ({
-    label: workspace.title,
-    value: workspace.id,
+    label: workspace.name,
+    value: workspace._id,
   }));
   const [value, setValue] = React.useState(null);
   const [isFocus, setIsFocus] = React.useState(false);
@@ -147,24 +160,31 @@ function TaskCreate() {
   const [show, setShow] = React.useState(false);
 
   const handleAddTask = () => {
-    if (task === "") {
-      return;
-    }
-    const workspace = workspaceList.find((ws) => ws.id === value);
-    if (!workspace) {
-      console.error("No workspace selected");
-      return;
-    }
     const newTask = {
-      id: (taskList.length + 1).toString(),
       title: task,
     };
-    setTaskList([...taskList, newTask]);
-    const updatedWorkspaceList = workspaceList.map((ws) =>
-      ws.id === workspace.id ? { ...ws, tasks: [...ws.tasks, newTask] } : ws
-    );
-    setWorkspaceList(updatedWorkspaceList);
-    setTask("");
+    fetch(`http://10.0.2.2:8000/createtask/${value}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: task,
+        description: taskDescription,
+        status: "To Do",
+        workspaceId: value,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Success:", data);
+        setTaskList([...taskList, newTask]);
+        setTask("");
+        setTaskDescription("");
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   };
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate;

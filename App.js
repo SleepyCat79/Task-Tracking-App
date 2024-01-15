@@ -13,6 +13,8 @@ function App() {
   const [UserId, setUserId] = React.useState(null);
   const [Name, setName] = React.useState(null);
   const [Email, setEmail] = React.useState(null);
+  const [refreshData, setRefreshData] = React.useState(false);
+
   return (
     <WorkspaceMaintain.Provider
       value={{
@@ -24,6 +26,8 @@ function App() {
         setName,
         Email,
         setEmail,
+        refreshData,
+        setRefreshData,
       }}
     >
       <NavigationContainer>

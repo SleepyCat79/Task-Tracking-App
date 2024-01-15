@@ -13,6 +13,8 @@ import {
 } from "react-native-responsive-screen";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ScaledSheet, scale } from "react-native-size-matters";
+import { useFocusEffect } from "@react-navigation/native";
+
 import * as Font from "expo-font";
 import WorkspaceMaintain from "./WorkspaceMaintain";
 
@@ -32,27 +34,34 @@ async function loadFonts() {
 function Workspace({ navigation }) {
   const { workspaceList, setWorkspaceList } =
     React.useContext(WorkspaceMaintain);
-  const { UserId, setUserId } = React.useContext(WorkspaceMaintain);
+  const { UserId, setUserId, refreshData, setRefreshData } =
+    React.useContext(WorkspaceMaintain);
   const [fontsLoaded, setFontsLoaded] = React.useState(false);
-  React.useEffect(() => {
-    fetch(`http://10.0.2.2:8000/getwp/${UserId}`)
-      .then((response) => response.json())
-      .then((data) => {
-        const { workspaces } = data;
-        console.log(workspaces);
-        setWorkspaceList(workspaces);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  }, [UserId]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchData = async () => {
+        try {
+          const response = await fetch(`http://10.0.2.2:8000/getwp/${UserId}`);
+          const data = await response.json();
+          const { workspaces } = data;
+          console.log(workspaces);
+          setWorkspaceList(workspaces);
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      };
+
+      fetchData();
+    }, [])
+  );
   const renderworkspace = ({ item, index }) => {
     return (
       <TouchableOpacity
         style={styles.workspacelist}
         onPress={() =>
           navigation.navigate("Tasks", {
-            workspaceId: item.id,
+            workspaceId: item._id,
           })
         }
       >
@@ -76,7 +85,7 @@ function Workspace({ navigation }) {
               fontFamily: "Inter-Bold",
             }}
           >
-            {item.tasklist ? item.tasklist.length : 0} Tasks left{" "}
+            {(item.tasklist ? item.tasklist.length : 0) + " Tasks left "}
           </Text>
         </View>
       </TouchableOpacity>
