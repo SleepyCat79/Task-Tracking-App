@@ -34,8 +34,14 @@ async function loadFonts() {
 function Workspace({ navigation }) {
   const { workspaceList, setWorkspaceList } =
     React.useContext(WorkspaceMaintain);
-  const { UserId, setUserId, refreshData, setRefreshData } =
-    React.useContext(WorkspaceMaintain);
+  const {
+    UserId,
+    setUserId,
+    refreshData,
+    setRefreshData,
+    workspaceId,
+    setWorkspaceId,
+  } = React.useContext(WorkspaceMaintain);
   const [fontsLoaded, setFontsLoaded] = React.useState(false);
 
   useFocusEffect(
@@ -59,11 +65,7 @@ function Workspace({ navigation }) {
     return (
       <TouchableOpacity
         style={styles.workspacelist}
-        onPress={() =>
-          navigation.navigate("Tasks", {
-            workspaceId: item._id,
-          })
-        }
+        onPress={() => setWorkspaceId(item._id) & navigation.navigate("Tasks")}
       >
         <Text
           style={{
