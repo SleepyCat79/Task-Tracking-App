@@ -52,13 +52,14 @@ function WorkspaceCreate() {
       title: workspace,
     };
 
-    fetch(`http://10.0.2.2:8000/createwp/${UserId}`, {
+    fetch(`http://10.0.2.2:8000/workspace`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
         name: workspace,
+        userID: UserId,
       }),
     })
       .then((response) => response.json())
@@ -163,7 +164,7 @@ function TaskCreate() {
     const newTask = {
       title: task,
     };
-    fetch(`http://10.0.2.2:8000/createtask/${value}`, {
+    fetch(`http://10.0.2.2:8000/Task`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -171,8 +172,9 @@ function TaskCreate() {
       body: JSON.stringify({
         name: task,
         description: taskDescription,
-        status: "To Do",
-        workspaceId: value,
+        startDate: "2024-01-19T18:00",
+        deadline: "2025-01-19",
+        workspaceID: value,
       }),
     })
       .then((response) => response.json())

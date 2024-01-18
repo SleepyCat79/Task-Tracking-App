@@ -75,10 +75,10 @@ function Inprogress({ route, navigation }) {
       const fetchData = async () => {
         try {
           const response = await fetch(
-            `http://10.0.2.2:8000/gettasks/${workspaceId}`
-          );
+            `http://10.0.2.2:8000/Task?workspaceID=${workspaceId}`
+          ); // Change this line
           const data = await response.json();
-          setTaskList(data.tasks);
+          setTaskList(data.tasklist);
         } catch (error) {
           console.error("Error:", error);
         }

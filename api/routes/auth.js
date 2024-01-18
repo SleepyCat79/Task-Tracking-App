@@ -16,8 +16,7 @@ router.post("/signup", async (req, res) => {
   try {
     const user = new User({ name, email, password });
     await user.save();
-    const token = jwt.sign({ userId: user._id }, JWT_SECRET);
-    res.send({ token });
+    res.json({ status: "success" });
   } catch (err) {
     return res.status(422).json({ error: err.message });
   }
@@ -35,11 +34,12 @@ router.post("/signin", async (req, res) => {
   }
 
   if (user.password === password) {
-    const token = jwt.sign({ userId: user._id }, JWT_SECRET); // Generate token
-    res.json({ token, name: user.name });
+    res.json({ status: "success", userID: user._id, name: user.name });
   } else {
     return res.status(422).json({ error: "Invalid Email or password" });
   }
 });
+
+// WEB-------------------------------------------------------------------------------------------------------
 
 module.exports = router;

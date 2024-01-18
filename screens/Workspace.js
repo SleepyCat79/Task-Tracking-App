@@ -48,10 +48,15 @@ function Workspace({ navigation }) {
     React.useCallback(() => {
       const fetchData = async () => {
         try {
-          const response = await fetch(`http://10.0.2.2:8000/getwp/${UserId}`);
+          console.log("UserId:", UserId); // Log UserId
+          const response = await fetch(
+            `http://10.0.2.2:8000/workspace?userID=${UserId}`
+          );
+          console.log("Response status:", response.status); // Log response status
           const data = await response.json();
+          console.log("Data:", data); // Log data
           const { workspaces } = data;
-          console.log(workspaces);
+          console.log("Workspaces:", workspaces); // Log workspaces
           setWorkspaceList(workspaces);
         } catch (error) {
           console.error("Error:", error);

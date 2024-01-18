@@ -87,8 +87,7 @@ function SignIn() {
             } else {
               setName(data.name);
               console.log("User name:", Name);
-              const decodedToken = jwtDecode(data.token);
-              setUserId(decodedToken.userId);
+              setUserId(data.userID);
               console.log(UserId);
               if (isChecked) {
                 AsyncStorage.setItem("userId", UserId);
