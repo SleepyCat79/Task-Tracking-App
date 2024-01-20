@@ -4,6 +4,7 @@ import {
   Text,
   ScrollView,
   FlatList,
+  Button,
   TouchableOpacity,
   TextInput,
   Modal,
@@ -14,12 +15,14 @@ import {
 } from "react-native-responsive-screen";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import Fontiso from "react-native-vector-icons/Fontisto";
 import { useFocusEffect } from "@react-navigation/native";
 import { ScaledSheet, scale } from "react-native-size-matters";
 import * as Font from "expo-font";
 import WorkspaceMaintain from "./WorkspaceMaintain";
 import colors from "../assets/colors/color";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 import * as SplashScreen from "expo-splash-screen";
 import * as Progress from "react-native-progress";
@@ -46,8 +49,13 @@ function Upcoming({ route, navigation }) {
 }
 
 function Inprogress({ route, navigation }) {
-  const { workspaceList, setWorkspaceList, workspaceId, setWorkspaceId } =
-    React.useContext(WorkspaceMaintain);
+  const {
+    workspaceList,
+    setWorkspaceList,
+    workspaceId,
+    setWorkspaceId,
+    UserId,
+  } = React.useContext(WorkspaceMaintain);
   const monthNames = [
     "January",
     "February",
@@ -69,14 +77,25 @@ function Inprogress({ route, navigation }) {
   const [addtask, setAddtask] = React.useState(false);
   const [addmember, setAddmember] = React.useState("");
   const [taskList, setTaskList] = React.useState([]);
+  const [selectedTask, setSelectedTask] = React.useState(null);
+  const [toDoList, setToDoList] = React.useState([]);
+  const [modalVisible, setModalVisible] = React.useState(false);
+  const [memberEmail, setMemberEmail] = React.useState([]);
+  const [taskName, setTaskName] = React.useState("");
+  const [taskDescription, setTaskDescription] = React.useState("");
+  const [startDate, setStartDate] = React.useState("");
+  const [deadline, setDeadline] = React.useState("");
+  const [subAdd, setSubAdd] = React.useState("");
+  const [subtask, setSubtask] = React.useState("");
+  const [errorMessage, setErrorMessage] = React.useState("");
 
   useFocusEffect(
     React.useCallback(() => {
       const fetchData = async () => {
         try {
           const response = await fetch(
-            `http://10.0.2.2:8000/Task?workspaceID=${workspaceId}`
-          ); // Change this line
+            `http://10.0.2.2:8000/Task?workspaceID=${workspaceId}&userID=${UserId}`
+          );
           const data = await response.json();
           setTaskList(data.tasklist);
         } catch (error) {
@@ -87,68 +106,140 @@ function Inprogress({ route, navigation }) {
       fetchData();
     }, [workspaceId])
   );
+  React.useEffect(() => {
+    if (selectedTask) {
+      const fetchData = async () => {
+        try {
+          const response = await fetch(
+            `http://10.0.2.2:8000/toDoList?userID=${UserId}&taskID=${selectedTask._id}`
+          );
+          const data = await response.json();
+          setTaskList((prevTaskList) =>
+            prevTaskList.map((task) =>
+              task._id === selectedTask._id
+                ? { ...task, toDoList: data.toDoList }
+                : task
+            )
+          );
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      };
 
+      fetchData();
+    }
+  }, [selectedTask]);
   const rendertask = ({ item, index }) => {
-    console.log(item);
     return (
-      <View
-        style={{
-          flexDirection: "column",
-          height: scale(165),
-        }}
-      >
-        <TouchableOpacity style={styles.workspacelist}>
-          <Text
-            style={{
-              color: colors.black,
-              fontFamily: "Inter-SemiBold",
-              fontSize: scale(18),
-              marginLeft: scale(20),
-              marginTop: scale(20),
+      <View>
+        <View
+          style={{
+            flexDirection: "column",
+            height: scale(165),
+          }}
+        >
+          <TouchableOpacity
+            onPress={() => {
+              setSelectedTask((prevSelectedTask) =>
+                prevSelectedTask && prevSelectedTask._id === item._id
+                  ? null
+                  : item
+              );
             }}
+            style={styles.workspacelist}
           >
-            {item.name}
-          </Text>
-          <TouchableOpacity style={styles.username}>
-            <Text style={{ color: colors.white, fontFamily: "Inter-SemiBold" }}>
-              Username
+            <Text
+              style={{
+                color: colors.black,
+                fontFamily: "Inter-SemiBold",
+                fontSize: scale(18),
+                marginLeft: scale(20),
+                marginTop: scale(20),
+              }}
+            >
+              {item.name}
             </Text>
+            <TouchableOpacity style={styles.username}>
+              <Text
+                style={{ color: colors.white, fontFamily: "Inter-SemiBold" }}
+              >
+                Username
+              </Text>
+            </TouchableOpacity>
           </TouchableOpacity>
-        </TouchableOpacity>
-        <View style={styles.tasktools}>
-          <TouchableOpacity>
-            <Ionicons
-              name="attach"
-              size={30}
-              color="#000"
-              style={{ marginLeft: scale(10) }}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setIsPinned(!isPinned)}>
-            <Ionicons
-              name={isPinned ? "pin" : "pin-outline"}
-              color={isPinned ? "red" : "#000"}
-              size={30}
-              style={{ marginLeft: scale(10) }}
-            />
-          </TouchableOpacity>
-          <View
-            style={{
-              marginLeft: scale(10),
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
-            <Ionicons name="time-sharp" size={30} />
-            <Text style={{ fontFamily: "Inter-Bold" }}>
-              {item.month} {item.day}
-            </Text>
+          <View style={styles.tasktools}>
+            <TouchableOpacity>
+              <Ionicons
+                name="attach"
+                size={30}
+                color="#000"
+                style={{ marginLeft: scale(10) }}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setIsPinned(!isPinned)}>
+              <Ionicons
+                name={isPinned ? "pin" : "pin-outline"}
+                color={isPinned ? "red" : "#000"}
+                size={30}
+                style={{ marginLeft: scale(10) }}
+              />
+            </TouchableOpacity>
+            <View
+              style={{
+                marginLeft: scale(10),
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              {/* <Ionicons name="time-sharp" size={30} />
+              <Text style={{ fontFamily: "Inter-Bold" }}>
+                {item.month} {item.day}
+              </Text> */}
+            </View>
+            <TouchableOpacity
+              onPress={() => {
+                setSelectedTask((prevSelectedTask) =>
+                  prevSelectedTask && prevSelectedTask._id === item._id
+                    ? null
+                    : item
+                );
+                setSubAdd(true);
+              }}
+            >
+              <Ionicons
+                name="add"
+                size={30}
+                style={{ marginLeft: scale(200) }}
+              ></Ionicons>
+            </TouchableOpacity>
           </View>
         </View>
+        {selectedTask && selectedTask._id === item._id && item.toDoList && (
+          <FlatList
+            data={item.toDoList}
+            renderItem={renderToDo}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        )}
       </View>
     );
   };
-
+  const renderToDo = ({ item, index }) => (
+    <View style={styles.todo}>
+      <Text
+        style={{
+          color: colors.white,
+          fontFamily: "Inter-SemiBold",
+          fontSize: scale(26),
+          marginLeft: scale(20),
+          justifyContent: "center",
+          marginTop: scale(10),
+        }}
+      >
+        {item.name}
+      </Text>
+    </View>
+  );
   React.useEffect(() => {
     async function prepare() {
       try {
@@ -172,6 +263,157 @@ function Inprogress({ route, navigation }) {
 
   if (!fontsLoaded) {
     return null;
+  }
+  function subtaskAdd() {
+    return (
+      <Modal visible={subAdd} animationType="slide" transparent={true}>
+        <View
+          style={{
+            backgroundColor: colors.white,
+            height: hp("50%"),
+            alignSelf: "center",
+            width: wp("100%"),
+            alignItems: "center",
+            marginTop: scale(100),
+            flexDirection: "column ",
+          }}
+        >
+          <TouchableOpacity
+            style={{
+              position: "absolute",
+              right: scale(10),
+              alignItems: "center",
+              justifyContent: "center",
+              width: scale(60),
+              height: scale(60),
+            }}
+            onPress={() => {
+              setSubAdd(false);
+              setSubtask("");
+              setMemberEmail([]);
+            }}
+          >
+            <Ionicons
+              name="close-outline"
+              color={"#828282"}
+              size={scale(40)}
+            ></Ionicons>
+          </TouchableOpacity>
+          <View>
+            <Text
+              style={{
+                fontFamily: "Inter-Bold",
+                marginTop: scale(40),
+                fontSize: scale(18),
+                marginLeft: scale(30),
+                width: wp("100%"),
+              }}
+            >
+              {selectedTask
+                ? `Create Sub Task for ${selectedTask.name}`
+                : "ERROR PLEASE TRY AGAIN"}
+            </Text>
+          </View>
+          <View
+            style={{
+              borderColor: "#2F80ED",
+              borderWidth: scale(1),
+              width: wp("90%"),
+              alignSelf: "center",
+              marginTop: scale(30),
+              height: scale(40),
+            }}
+          >
+            <TextInput
+              placeholder="Subtask name..."
+              placeholderTextColor={colors.grey}
+              multiline={true}
+              onChangeText={(text) => setSubtask(text)}
+              style={{
+                marginLeft: scale(8),
+                marginTop: scale(10),
+                fontFamily: "Inter-Regular",
+                fontSize: scale(15),
+              }}
+              value={subtask}
+            />
+          </View>
+          <View
+            style={{
+              borderColor: "#2F80ED",
+              borderWidth: scale(1),
+              width: wp("90%"),
+              alignSelf: "center",
+              marginTop: scale(10),
+              height: scale(80),
+            }}
+          >
+            <TextInput
+              placeholder="Enter member's email, seperated by comma..."
+              onChangeText={(text) => setMemberEmail(text.split(","))}
+              value={memberEmail.join(",")}
+              placeholderTextColor={colors.grey}
+              multiline={true}
+              style={{
+                marginLeft: scale(8),
+                marginTop: scale(10),
+                fontFamily: "Inter-Regular",
+                fontSize: scale(14),
+                width: wp("100%"),
+              }}
+            />
+          </View>
+          <View>
+            <TouchableOpacity
+              style={styles.addbutton3}
+              onPress={async () => {
+                if (!subtask || memberEmail.length === 0 || !selectedTask) {
+                  setErrorMessage("Please fill all the fields");
+                  return;
+                }
+
+                const response = await fetch("http://10.0.2.2:8000/toDoListE", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    userEmail: memberEmail,
+                    name: subtask,
+                    taskID: selectedTask._id,
+                  }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                  console.log("Sub Task created:", data);
+                  setSubAdd(false);
+                  setMemberEmail([]);
+                  setErrorMessage("");
+                } else {
+                  setErrorMessage("This user does not exist");
+                }
+              }}
+            >
+              <Text style={{ color: colors.white }}>Add</Text>
+            </TouchableOpacity>
+          </View>
+          {errorMessage ? (
+            <Text
+              style={{
+                fontFamily: "Inter-SemiBold",
+                top: scale(40),
+                fontSize: scale(13),
+                color: "red",
+              }}
+            >
+              {errorMessage}
+            </Text>
+          ) : null}
+        </View>
+      </Modal>
+    );
   }
   function memberAdd() {
     return (
@@ -278,168 +520,352 @@ function Inprogress({ route, navigation }) {
   function taskAdd() {
     return (
       <Modal visible={addtask} animationType="slide" transparent={true}>
-        <SafeAreaView
-          style={{
-            backgroundColor: "#fff",
-            height: hp("100%"),
-            width: wp("100%"),
-          }}
-        >
-          <TouchableOpacity
-            style={{ position: "absolute", right: scale(10) }}
-            onPress={() => setAddtask(false)}
-          >
-            <Ionicons
-              name="close-outline"
-              color={"#828282"}
-              size={scale(40)}
-            ></Ionicons>
-          </TouchableOpacity>
-          <Text
+        <KeyboardAwareScrollView>
+          <SafeAreaView
             style={{
-              fontFamily: "Inter-Bold",
-              fontSize: scale(20),
-              marginTop: scale(30),
-              marginLeft: scale(20),
+              backgroundColor: "#fff",
+              height: hp("100%"),
+              width: wp("100%"),
             }}
           >
-            Create New Task
-          </Text>
-          <View style={{ flexDirection: "row" }}>
-            <Text
-              style={{
-                fontFamily: "Inter-Regular",
-                fontSize: scale(13),
-                color: "#4F4F4F",
-                marginLeft: scale(20),
-                marginTop: scale(40),
-              }}
-            >
-              {" "}
-              For{" "}
-            </Text>
             <TouchableOpacity
-              style={{
-                marginLeft: scale(20),
-                marginTop: scale(30),
-                padding: scale(10), // Add padding to give some space around the text
-                backgroundColor: "#fff", // Add a background color for the shadow to show up against
-                shadowColor: "#000",
-                shadowOffset: {
-                  width: 0,
-                  height: 2,
-                },
-                shadowOpacity: 0.25,
-                shadowRadius: 3.84,
-                elevation: 5,
-              }}
-            >
-              <Text
-                style={{
-                  fontFamily: "Inter-Regular",
-                }}
-              >
-                Add member
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <View
-            style={{
-              borderColor: "#2F80ED",
-              borderWidth: scale(1),
-              width: wp("90%"),
-              alignSelf: "center",
-              marginTop: scale(20),
-              height: scale(180),
-            }}
-          >
-            <TextInput
-              placeholder="Description..."
-              placeholderTextColor={colors.grey}
-              multiline={true}
-              style={{
-                marginLeft: scale(8),
-                marginTop: scale(10),
-                fontFamily: "Inter-Regular",
-                fontSize: scale(15),
-              }}
-            />
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              paddingLeft: scale(25),
-              paddingTop: scale(14),
-              flex: 1,
-            }}
-          >
-            <TouchableOpacity>
-              <Ionicons
-                name="text-outline"
-                size={scale(25)}
-                color={"#828282"}
-                style={{ marginRight: scale(10) }}
-              ></Ionicons>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Ionicons
-                name="happy-outline"
-                size={scale(25)}
-                color={"#828282"}
-                style={{
-                  marginRight: scale(5),
-                }}
-              ></Ionicons>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Ionicons
-                name="attach-outline"
-                size={scale(25)}
-                color={"#828282"}
-                style={{
-                  marginRight: scale(5),
-                }}
-              ></Ionicons>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Ionicons
-                name="calendar-outline"
-                size={scale(25)}
-                color={"#828282"}
-                style={{
-                  marginRight: scale(5),
-                }}
-              ></Ionicons>
-            </TouchableOpacity>
-            <TouchableOpacity
+              style={{ position: "absolute", right: scale(10) }}
               onPress={() => {
-                setAddmember(true);
+                setMemberEmail([]);
                 setAddtask(false);
               }}
             >
               <Ionicons
-                name="person-add"
-                size={scale(25)}
+                name="close-outline"
                 color={"#828282"}
-                style={{
-                  marginLeft: scale(150),
-                }}
+                size={scale(40)}
               ></Ionicons>
             </TouchableOpacity>
-          </View>
-          <View>
-            <TouchableOpacity style={styles.addbutton}>
-              <Text style={{ color: colors.white }}>Add</Text>
-            </TouchableOpacity>
-          </View>
-        </SafeAreaView>
+            <Text
+              style={{
+                fontFamily: "Inter-Bold",
+                fontSize: scale(20),
+                marginTop: scale(30),
+                marginLeft: scale(20),
+              }}
+            >
+              Create New Task
+            </Text>
+            <View style={{ flexDirection: "row" }}>
+              <Text
+                style={{
+                  fontFamily: "Inter-Regular",
+                  fontSize: scale(13),
+                  color: "#4F4F4F",
+                  marginLeft: scale(20),
+                  marginTop: scale(40),
+                }}
+              >
+                {" "}
+                For
+              </Text>
+              <TouchableOpacity
+                onPress={() => setModalVisible(true)}
+                style={{
+                  marginLeft: scale(20),
+                  marginTop: scale(30),
+                  padding: scale(10), // Add padding to give some space around the text
+                  backgroundColor: "#fff", // Add a background color for the shadow to show up against
+                  shadowColor: "#000",
+                  shadowOffset: {
+                    width: 0,
+                    height: 2,
+                  },
+                  shadowOpacity: 0.25,
+                  shadowRadius: 3.84,
+                  elevation: 5,
+                }}
+              >
+                <Text
+                  style={{
+                    fontFamily: "Inter-Regular",
+                  }}
+                >
+                  {memberEmail.length === 0
+                    ? "Add member"
+                    : memberEmail.join(", ")}
+                </Text>
+              </TouchableOpacity>
+              <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}
+              >
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <View
+                    style={{
+                      backgroundColor: colors.white,
+                      padding: 30,
+                      width: wp("80%"),
+                      height: hp("40%"),
+                      borderRadius: 10,
+                      borderColor: colors.Royalblue,
+                      borderWidth: 1,
+                    }}
+                  >
+                    <TextInput
+                      placeholder="Enter member's email, seperated by comma"
+                      onChangeText={(text) => setMemberEmail(text.split(","))}
+                      value={memberEmail.join(",")}
+                    />
+                  </View>
+                </View>
+              </Modal>
+            </View>
+            <View
+              style={{
+                borderColor: "#2F80ED",
+                borderWidth: scale(1),
+                width: wp("90%"),
+                alignSelf: "center",
+                marginTop: scale(20),
+                height: scale(40),
+              }}
+            >
+              <TextInput
+                placeholder="Task name..."
+                placeholderTextColor={colors.grey}
+                multiline={true}
+                onChangeText={(text) => setTaskName(text)}
+                style={{
+                  marginLeft: scale(8),
+                  marginTop: scale(10),
+                  fontFamily: "Inter-Regular",
+                  fontSize: scale(15),
+                }}
+                value={taskName}
+              />
+            </View>
+            <View
+              style={{
+                borderColor: "#2F80ED",
+                borderWidth: scale(1),
+                width: wp("90%"),
+                alignSelf: "center",
+                marginTop: scale(20),
+                height: scale(140),
+              }}
+            >
+              <TextInput
+                placeholder="Description..."
+                placeholderTextColor={colors.grey}
+                multiline={true}
+                onChangeText={(text) => setTaskDescription(text)}
+                value={taskDescription}
+                style={{
+                  marginLeft: scale(8),
+                  marginTop: scale(10),
+                  fontFamily: "Inter-Regular",
+                  fontSize: scale(15),
+                }}
+              />
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                paddingLeft: scale(25),
+                paddingTop: scale(14),
+                flex: 1,
+              }}
+            >
+              <TouchableOpacity>
+                <Ionicons
+                  name="text-outline"
+                  size={scale(25)}
+                  color={"#828282"}
+                  style={{ marginRight: scale(10) }}
+                ></Ionicons>
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <Ionicons
+                  name="happy-outline"
+                  size={scale(25)}
+                  color={"#828282"}
+                  style={{
+                    marginRight: scale(5),
+                  }}
+                ></Ionicons>
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <Ionicons
+                  name="attach-outline"
+                  size={scale(25)}
+                  color={"#828282"}
+                  style={{
+                    marginRight: scale(5),
+                  }}
+                ></Ionicons>
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <Ionicons
+                  name="calendar-outline"
+                  size={scale(25)}
+                  color={"#828282"}
+                  style={{
+                    marginRight: scale(5),
+                  }}
+                ></Ionicons>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setAddmember(true);
+                  setAddtask(false);
+                }}
+              >
+                <Ionicons
+                  name="person-add"
+                  size={scale(25)}
+                  color={"#828282"}
+                  style={{
+                    marginLeft: scale(150),
+                  }}
+                ></Ionicons>
+              </TouchableOpacity>
+            </View>
+            <View style={{ flexDirection: "row" }}>
+              <View>
+                <Text
+                  style={{
+                    fontFamily: "Inter-SemiBold",
+                    marginLeft: scale(25),
+                    fontSize: scale(15),
+                    marginBottom: scale(10),
+                  }}
+                >
+                  Start time
+                </Text>
+                <View
+                  style={{
+                    borderColor: "#2F80ED",
+                    borderWidth: scale(1),
+                    width: wp("40%"),
+                    height: scale(40),
+                    marginLeft: scale(20),
+                    marginBottom: scale(140),
+                  }}
+                >
+                  <TextInput
+                    input
+                    placeholder="YY/MM/DD Hour:Min"
+                    placeholderTextColor={colors.grey}
+                    multiline={false}
+                    onChangeText={(text) => setStartDate(text)}
+                    value={startDate}
+                    style={{
+                      marginLeft: scale(20),
+                      marginTop: scale(6),
+                      justifyContent: "center",
+                      fontFamily: "Inter-Regular",
+                      fontSize: scale(11),
+                      width: wp("100%"),
+                    }}
+                  />
+                </View>
+              </View>
+              <View>
+                <Text
+                  style={{
+                    fontFamily: "Inter-SemiBold",
+                    marginLeft: scale(45),
+                    fontSize: scale(15),
+                    marginBottom: scale(10),
+                  }}
+                >
+                  End time
+                </Text>
+                <View
+                  style={{
+                    borderColor: "#2F80ED",
+                    borderWidth: scale(1),
+                    width: wp("40%"),
+                    height: scale(40),
+                    marginLeft: scale(40),
+                    marginBottom: scale(140),
+                  }}
+                >
+                  <TextInput
+                    input
+                    placeholder="YY/MM/DD Hour:Min"
+                    placeholderTextColor={colors.grey}
+                    multiline={false}
+                    onChangeText={(text) => setDeadline(text)}
+                    value={deadline}
+                    style={{
+                      marginLeft: scale(20),
+                      marginTop: scale(6),
+                      justifyContent: "center",
+                      fontFamily: "Inter-Regular",
+                      fontSize: scale(11),
+                      width: wp("100%"),
+                    }}
+                  />
+                </View>
+              </View>
+            </View>
+            <View>
+              <TouchableOpacity
+                style={styles.addbutton}
+                onPress={async () => {
+                  const response = await fetch("http://10.0.2.2:8000/Task", {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                      workspaceID: workspaceId,
+                      name: taskName,
+                      description: taskDescription,
+                      startDate: startDate,
+                      deadline: deadline,
+                      userEmails: memberEmail,
+                    }),
+                  });
+
+                  const data = await response.json();
+
+                  if (response.ok) {
+                    console.log("Task created:", data);
+                    setModalVisible(false);
+                    setMemberEmail([]);
+                  } else {
+                    console.error("Error creating task:", data.error);
+                  }
+                }}
+              >
+                <Text style={{ color: colors.white }}>Add</Text>
+              </TouchableOpacity>
+            </View>
+          </SafeAreaView>
+        </KeyboardAwareScrollView>
       </Modal>
     );
   }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.white }}>
-      <FlatList data={taskList} renderItem={rendertask} />
+      <FlatList
+        data={taskList}
+        renderItem={rendertask}
+        keyExtractor={(item, index) => index.toString()}
+      />
+      {selectedTask && (
+        <FlatList
+          data={toDoList}
+          renderItem={renderToDo}
+          keyExtractor={(item, index) => index.toString()}
+        />
+      )}
       <TouchableOpacity
         style={{
           position: "absolute",
@@ -470,6 +896,7 @@ function Inprogress({ route, navigation }) {
       </TouchableOpacity>
       {taskAdd()}
       {memberAdd()}
+      {subtaskAdd()}
     </SafeAreaView>
   );
 }
@@ -617,6 +1044,28 @@ const styles = ScaledSheet.create({
     justifyContent: "center",
     backgroundColor: colors.Royalblue,
     borderRadius: scale(10),
+  },
+  addbutton3: {
+    width: scale(120),
+    backgroundColor: "#000",
+    height: scale(40),
+    top: scale(30),
+    left: scale(60),
+    alignItems: "center",
+    alignSelf: "center",
+    justifyContent: "center",
+    backgroundColor: colors.Royalblue,
+    borderRadius: scale(10),
+  },
+  todo: {
+    backgroundColor: colors.Royalblue,
+    width: "320@s",
+    borderRadius: "10@s",
+    height: "76@s",
+    alignSelf: "center",
+    marginTop: "20@s",
+    flex: 1,
+    flexDirection: "column",
   },
 });
 
