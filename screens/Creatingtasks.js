@@ -31,10 +31,11 @@ async function loadFonts() {
     "Inter-Medium": require("../assets/fonts/Inter-Medium.otf"),
     "Inter-Regular": require("../assets/fonts/Inter-Regular.otf"),
     "Inter-SemiBold": require("../assets/fonts/Inter-SemiBold.otf"),
-    "Inter-Regular": require("../assets/fonts/Inter-Regular.otf"),
   });
 }
-function WorkspaceCreate() {
+
+function Creatingtasks({ route, navigation }) {
+  const [fontsLoaded, setFontsLoaded] = React.useState(false);
   const [workspace, setWorkspace] = React.useState("");
   const {
     workspaceList,
@@ -44,6 +45,31 @@ function WorkspaceCreate() {
     refreshData,
     setRefreshData,
   } = React.useContext(WorkspaceMaintain);
+  React.useEffect(() => {
+    async function prepare() {
+      try {
+        await SplashScreen.preventAutoHideAsync();
+        await loadFonts();
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setFontsLoaded(true);
+      }
+    }
+
+    prepare();
+  }, []);
+
+  React.useEffect(() => {
+    if (fontsLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
   const handleAddWorkspace = () => {
     if (workspace === "") {
       return;
@@ -137,291 +163,6 @@ function WorkspaceCreate() {
     </SafeAreaView>
   );
 }
-
-function TaskCreate() {
-  const {
-    workspaceList,
-    setWorkspaceList,
-    UserId,
-    setUserId,
-    refreshData,
-    setRefreshData,
-  } = React.useContext(WorkspaceMaintain);
-  const [task, setTask] = React.useState("");
-  const [taskList, setTaskList] = React.useState([]);
-  const [taskDescription, setTaskDescription] = React.useState("");
-  const data = workspaceList.map((workspace, index) => ({
-    label: workspace.name,
-    value: workspace._id,
-  }));
-  const [value, setValue] = React.useState(null);
-  const [isFocus, setIsFocus] = React.useState(false);
-  const [date, setDate] = React.useState(new Date(1598051730000));
-  const [mode, setMode] = React.useState("date");
-  const [show, setShow] = React.useState(false);
-
-  const handleAddTask = () => {
-    const newTask = {
-      title: task,
-    };
-    fetch(`http://10.0.2.2:8000/Task`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: task,
-        description: taskDescription,
-        startDate: "2024-01-19T18:00",
-        deadline: "2025-01-19",
-        workspaceID: value,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Success:", data);
-        setTaskList([...taskList, newTask]);
-        setTask("");
-        setTaskDescription("");
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  };
-  const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate;
-    setShow(false);
-    setDate(currentDate);
-  };
-
-  const showMode = (currentMode) => {
-    setShow(true);
-    setMode(currentMode);
-  };
-
-  const showDatepicker = () => {
-    showMode("date");
-  };
-
-  const showTimepicker = () => {
-    showMode("time");
-  };
-
-  const renderLabel = () => {
-    if (value || isFocus) {
-      return (
-        <Text style={[styles.label, isFocus && { color: "blue" }]}>
-          Choose Workspace
-        </Text>
-      );
-    }
-    return null;
-  };
-  return (
-    <SafeAreaView
-      style={{
-        backgroundColor: colors.white,
-        flex: 1,
-      }}
-    >
-      <Text
-        style={{
-          textAlign: "center",
-          fontFamily: "Inter-Bold",
-          fontSize: scale(26),
-        }}
-      >
-        Create new task
-      </Text>
-      <View style={styles.input1}>
-        <TextInput
-          placeholder="Task name"
-          placeholderTextColor={colors.grey}
-          style={{
-            marginLeft: scale(10),
-            fontFamily: "Inter-Regular",
-            fontSize: scale(12),
-          }}
-          value={task}
-          onChangeText={setTask}
-        />
-      </View>
-      <View style={styles.input2}>
-        <TextInput
-          placeholder="Description"
-          placeholderTextColor={colors.grey}
-          style={{
-            marginLeft: scale(10),
-            fontFamily: "Inter-Regular",
-            fontSize: scale(12),
-          }}
-          value={taskDescription}
-          onChangeText={setTaskDescription}
-        />
-      </View>
-      <View style={styles.container}>
-        {renderLabel()}
-        <Dropdown
-          style={[styles.dropdown, isFocus && { borderColor: "blue" }]}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          inputSearchStyle={styles.inputSearchStyle}
-          iconStyle={styles.iconStyle}
-          data={data}
-          search
-          maxHeight={300}
-          labelField="label"
-          valueField="value"
-          placeholder={!isFocus ? "Select workspace" : "..."}
-          searchPlaceholder="Search..."
-          value={value}
-          onFocus={() => setIsFocus(true)}
-          onBlur={() => setIsFocus(false)}
-          onChange={(item) => {
-            setValue(item.value);
-            setIsFocus(false);
-          }}
-          renderLeftIcon={() => (
-            <AntDesign
-              style={styles.icon}
-              color={isFocus ? "blue" : "black"}
-              name="database"
-              size={20}
-            />
-          )}
-        />
-      </View>
-      <View style={styles.input3}>
-        <TextInput
-          placeholder="Tag"
-          placeholderTextColor={colors.grey}
-          style={{
-            marginLeft: scale(10),
-            fontFamily: "Inter-Regular",
-            fontSize: scale(12),
-          }}
-        />
-      </View>
-      <View style={styles.timebutton}>
-        <TouchableOpacity
-          style={styles.timepicker1}
-          onPress={() => showDatepicker()}
-        >
-          <Text style={{ fontFamily: "Inter-SemiBold" }}>
-            Set deadline Date
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.timepicker2}
-          onPress={() => showTimepicker()}
-        >
-          <Text style={{ fontFamily: "Inter-SemiBold" }}>
-            Set deadline Time
-          </Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.input1}>
-        <Text
-          style={{
-            textAlign: "center",
-            fontFamily: "Inter-Bold",
-            fontSize: scale(14),
-          }}
-        >
-          Deadline: {date.toLocaleString()}
-        </Text>
-        {show && (
-          <DateTimePicker
-            testID="dateTimePicker"
-            value={date}
-            mode={mode}
-            is24Hour={true}
-            onChange={onChange}
-          />
-        )}
-      </View>
-      <View>
-        <TouchableOpacity
-          style={styles.addbutton}
-          onPress={() => handleAddTask()}
-        >
-          <Text style={{ color: colors.white }}>Add</Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
-  );
-}
-
-const Tab = createMaterialTopTabNavigator();
-
-function Creatingtasks({ route, navigation }) {
-  const [fontsLoaded, setFontsLoaded] = React.useState(false);
-
-  React.useEffect(() => {
-    async function prepare() {
-      try {
-        await SplashScreen.preventAutoHideAsync();
-        await loadFonts();
-      } catch (e) {
-        console.warn(e);
-      } finally {
-        setFontsLoaded(true);
-      }
-    }
-
-    prepare();
-  }, []);
-
-  React.useEffect(() => {
-    if (fontsLoaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded]);
-
-  if (!fontsLoaded) {
-    return null;
-  }
-  return (
-    <SafeAreaView style={{ flex: 1, flexDirection: "row" }}>
-      <Tab.Navigator
-        screenOptions={{
-          tabBarStyle: {
-            backgroundColor: colors.white,
-            height: scale(30),
-            width: wp("100%"),
-            elevation: 0,
-          },
-          tabBarIndicatorStyle: {
-            backgroundColor: colors.darkblue, // Change this to your desired color
-            height: 2, // Change this to modify the height
-          },
-          tabBarItemStyle: {
-            justifyContent: "center", // Aligns the icon and label vertically
-            alignItems: "center", // Aligns the icon and label horizontally
-          },
-          tabBarLabelStyle: {
-            fontSize: 12,
-            paddingBottom: "auto",
-            fontFamily: "Inter-SemiBold",
-          },
-        }}
-      >
-        <Tab.Screen name="Create new workspace" component={WorkspaceCreate} />
-        <Tab.Screen name="Create new task" component={TaskCreate} />
-      </Tab.Navigator>
-      <TouchableOpacity
-        style={{ position: "absolute" }}
-        onPress={() => navigation.navigate("Home")}
-      >
-        <Ionicons
-          name="arrow-back-circle-outline"
-          size={40}
-          style={{ marginTop: scale(60) }}
-        />
-      </TouchableOpacity>
-    </SafeAreaView>
-  );
-}
 const styles = ScaledSheet.create({
   input1: {
     width: wp("85%"),
@@ -507,7 +248,7 @@ const styles = ScaledSheet.create({
     width: wp("90%"),
     backgroundColor: "#000",
     height: scale(40),
-    marginTop: scale(40),
+    marginTop: scale(250),
     marginRight: scale(5),
     alignItems: "center",
     alignSelf: "center",

@@ -23,7 +23,6 @@ import WorkspaceMaintain from "./WorkspaceMaintain";
 import colors from "../assets/colors/color";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-
 import * as SplashScreen from "expo-splash-screen";
 import * as Progress from "react-native-progress";
 
@@ -38,14 +37,316 @@ async function loadFonts() {
 }
 
 function Done({ route, navigation }) {
-  <View>
-    <Text>Home</Text>
-  </View>;
+  const {
+    workspaceList,
+    setWorkspaceList,
+    workspaceId,
+    setWorkspaceId,
+    UserId,
+  } = React.useContext(WorkspaceMaintain);
+  const [isPinned, setIsPinned] = React.useState(false);
+  const [fontsLoaded, setFontsLoaded] = React.useState(false);
+  const [taskList, setTaskList] = React.useState([]);
+
+  const [selectedTask, setSelectedTask] = React.useState(null);
+
+  const fetchTasks = React.useCallback(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          `http://10.0.2.2:8000/Task?workspaceID=${workspaceId}&userID=${UserId}`
+        );
+        const data = await response.json();
+        const inProgressTasks = data.tasklist.filter(
+          (task) => task.status === "done" || task.status === "expired"
+        );
+
+        setTaskList(inProgressTasks);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+
+    fetchData();
+  }, [workspaceId, UserId, setTaskList]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchTasks();
+    }, [fetchTasks])
+  );
+  React.useEffect(() => {
+    if (selectedTask) {
+      const fetchData = async () => {
+        try {
+          const response = await fetch(
+            `http://10.0.2.2:8000/toDoList?userID=${UserId}&taskID=${selectedTask._id}`
+          );
+          const data = await response.json();
+          setTaskList((prevTaskList) =>
+            prevTaskList.map((task) =>
+              task._id === selectedTask._id
+                ? { ...task, toDoList: data.toDoList }
+                : task
+            )
+          );
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      };
+
+      fetchData();
+    }
+  }, [selectedTask]);
+  const rendertask = ({ item, index }) => {
+    return (
+      <View>
+        <View
+          style={{
+            flexDirection: "column",
+            height: scale(165),
+          }}
+        >
+          <TouchableOpacity style={styles.workspacelist}>
+            <Text
+              style={{
+                color: colors.black,
+                fontFamily: "Inter-SemiBold",
+                fontSize: scale(18),
+                marginLeft: scale(20),
+                marginTop: scale(20),
+              }}
+            >
+              {item.name}
+            </Text>
+            <TouchableOpacity
+              style={{
+                width: scale(150),
+                height: scale(25),
+                borderRadius: scale(5),
+                backgroundColor: item.status === "done" ? "green" : "red",
+                marginTop: scale(5),
+                marginLeft: scale(5),
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text
+                style={{ color: colors.white, fontFamily: "Inter-SemiBold" }}
+              >
+                {item.status === "done" ? "Complete" : "Expired"}
+              </Text>
+            </TouchableOpacity>
+          </TouchableOpacity>
+          <View style={styles.tasktools}>
+            <View
+              style={{
+                marginLeft: scale(10),
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            ></View>
+            <TouchableOpacity
+              onPress={async () => {
+                const response = await fetch(
+                  `http://10.0.2.2:8000/Task?workspaceID=${workspaceId}&taskID=${item._id}`,
+                  {
+                    method: "DELETE",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                  }
+                );
+
+                const data = await response.json();
+                if (data.status === "success") {
+                  fetchTasks();
+                }
+              }}
+            >
+              <Ionicons
+                name="trash-outline"
+                size={30}
+                style={{ marginLeft: scale(300) }}
+              ></Ionicons>
+            </TouchableOpacity>
+          </View>
+        </View>
+        {selectedTask && selectedTask._id === item._id && item.toDoList && (
+          <FlatList
+            data={item.toDoList}
+            renderItem={renderToDo}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        )}
+      </View>
+    );
+  };
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.white }}>
+      <FlatList
+        data={taskList}
+        renderItem={rendertask}
+        keyExtractor={(item, index) => index.toString()}
+      />
+    </SafeAreaView>
+  );
 }
 function Upcoming({ route, navigation }) {
-  <View>
-    <Text>Home</Text>
-  </View>;
+  const {
+    workspaceList,
+    setWorkspaceList,
+    workspaceId,
+    setWorkspaceId,
+    UserId,
+  } = React.useContext(WorkspaceMaintain);
+  const [isPinned, setIsPinned] = React.useState(false);
+  const [fontsLoaded, setFontsLoaded] = React.useState(false);
+  const [taskList, setTaskList] = React.useState([]);
+
+  const [selectedTask, setSelectedTask] = React.useState(null);
+
+  const fetchTasks = React.useCallback(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          `http://10.0.2.2:8000/Task?workspaceID=${workspaceId}&userID=${UserId}`
+        );
+        const data = await response.json();
+        const inProgressTasks = data.tasklist.filter(
+          (task) => task.status === "upcoming"
+        );
+
+        setTaskList(inProgressTasks);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+
+    fetchData();
+  }, [workspaceId, UserId, setTaskList]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchTasks();
+    }, [fetchTasks])
+  );
+  React.useEffect(() => {
+    if (selectedTask) {
+      const fetchData = async () => {
+        try {
+          const response = await fetch(
+            `http://10.0.2.2:8000/toDoList?userID=${UserId}&taskID=${selectedTask._id}`
+          );
+          const data = await response.json();
+          setTaskList((prevTaskList) =>
+            prevTaskList.map((task) =>
+              task._id === selectedTask._id
+                ? { ...task, toDoList: data.toDoList }
+                : task
+            )
+          );
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      };
+
+      fetchData();
+    }
+  }, [selectedTask]);
+  const rendertask = ({ item, index }) => {
+    return (
+      <View>
+        <View
+          style={{
+            flexDirection: "column",
+            height: scale(165),
+          }}
+        >
+          <TouchableOpacity style={styles.workspacelist}>
+            <Text
+              style={{
+                color: colors.black,
+                fontFamily: "Inter-SemiBold",
+                fontSize: scale(18),
+                marginLeft: scale(20),
+                marginTop: scale(20),
+              }}
+            >
+              {item.name}
+            </Text>
+            <TouchableOpacity
+              style={{
+                width: scale(150),
+                height: scale(25),
+                borderRadius: scale(5),
+                backgroundColor: "#6466F7",
+                marginTop: scale(5),
+                marginLeft: scale(5),
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text
+                style={{ color: colors.white, fontFamily: "Inter-SemiBold" }}
+              >
+                {item.status}
+              </Text>
+            </TouchableOpacity>
+          </TouchableOpacity>
+          <View style={styles.tasktools}>
+            <View
+              style={{
+                marginLeft: scale(10),
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            ></View>
+            <TouchableOpacity
+              onPress={async () => {
+                const response = await fetch(
+                  `http://10.0.2.2:8000/Task?workspaceID=${workspaceId}&taskID=${item._id}`,
+                  {
+                    method: "DELETE",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                  }
+                );
+
+                const data = await response.json();
+                if (data.status === "success") {
+                  fetchTasks();
+                }
+              }}
+            >
+              <Ionicons
+                name="trash-outline"
+                size={30}
+                style={{ marginLeft: scale(300) }}
+              ></Ionicons>
+            </TouchableOpacity>
+          </View>
+        </View>
+        {selectedTask && selectedTask._id === item._id && item.toDoList && (
+          <FlatList
+            data={item.toDoList}
+            renderItem={renderToDo}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        )}
+      </View>
+    );
+  };
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.white }}>
+      <FlatList
+        data={taskList}
+        renderItem={rendertask}
+        keyExtractor={(item, index) => index.toString()}
+      />
+    </SafeAreaView>
+  );
 }
 
 function Inprogress({ route, navigation }) {
@@ -89,22 +390,30 @@ function Inprogress({ route, navigation }) {
   const [subtask, setSubtask] = React.useState("");
   const [errorMessage, setErrorMessage] = React.useState("");
 
+  const fetchTasks = React.useCallback(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          `http://10.0.2.2:8000/Task?workspaceID=${workspaceId}&userID=${UserId}`
+        );
+        const data = await response.json();
+        const inProgressTasks = data.tasklist.filter(
+          (task) => task.status === "inprogess"
+        );
+
+        setTaskList(inProgressTasks);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+
+    fetchData();
+  }, [workspaceId, UserId, setTaskList]);
+
   useFocusEffect(
     React.useCallback(() => {
-      const fetchData = async () => {
-        try {
-          const response = await fetch(
-            `http://10.0.2.2:8000/Task?workspaceID=${workspaceId}&userID=${UserId}`
-          );
-          const data = await response.json();
-          setTaskList(data.tasklist);
-        } catch (error) {
-          console.error("Error:", error);
-        }
-      };
-
-      fetchData();
-    }, [workspaceId])
+      fetchTasks();
+    }, [fetchTasks])
   );
   React.useEffect(() => {
     if (selectedTask) {
@@ -130,6 +439,39 @@ function Inprogress({ route, navigation }) {
     }
   }, [selectedTask]);
   const rendertask = ({ item, index }) => {
+    const date = new Date(item.deadline);
+    const currentDate = new Date();
+
+    // Check if the task's deadline is earlier than the current date
+    if (date < currentDate) {
+      // Make an API call to set the task's status to "expired"
+      fetch(
+        `http://10.0.2.2:8000/Task?workspaceID=${workspaceId}&taskID=${item._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            status: "expired",
+          }),
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.status === "success") {
+            fetchTasks();
+          }
+        });
+    }
+    const formattedDate = `${date.getHours().toString().padStart(2, "0")}:${date
+      .getMinutes()
+      .toString()
+      .padStart(2, "0")} on ${date.getDate().toString().padStart(2, "0")}-${(
+      date.getMonth() + 1
+    )
+      .toString()
+      .padStart(2, "0")}-${date.getFullYear()}`;
     return (
       <View>
         <View
@@ -163,7 +505,7 @@ function Inprogress({ route, navigation }) {
               <Text
                 style={{ color: colors.white, fontFamily: "Inter-SemiBold" }}
               >
-                Username
+                {formattedDate}
               </Text>
             </TouchableOpacity>
           </TouchableOpacity>
@@ -191,11 +533,54 @@ function Inprogress({ route, navigation }) {
                 alignItems: "center",
               }}
             >
-              {/* <Ionicons name="time-sharp" size={30} />
-              <Text style={{ fontFamily: "Inter-Bold" }}>
-                {item.month} {item.day}
-              </Text> */}
+              <TouchableOpacity
+                onPress={async () => {
+                  const response = await fetch(
+                    `http://10.0.2.2:8000/Task?workspaceID=${workspaceId}&taskID=${item._id}`,
+                    {
+                      method: "PUT",
+                      headers: {
+                        "Content-Type": "application/json",
+                      },
+                      body: JSON.stringify({
+                        status: "done",
+                      }),
+                    }
+                  );
+
+                  const data = await response.json();
+                  if (data.status === "success") {
+                    fetchTasks();
+                  }
+                }}
+              >
+                <Ionicons name="checkmark" size={30} />
+              </TouchableOpacity>
             </View>
+            <TouchableOpacity
+              onPress={async () => {
+                const response = await fetch(
+                  `http://10.0.2.2:8000/Task?workspaceID=${workspaceId}&taskID=${item._id}`,
+                  {
+                    method: "DELETE",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                  }
+                );
+
+                const data = await response.json();
+                if (data.status === "success") {
+                  fetchTasks();
+                }
+              }}
+            >
+              <Ionicons
+                name="trash-outline"
+                size={30}
+                style={{ marginLeft: scale(140) }}
+              ></Ionicons>
+            </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
                 setSelectedTask((prevSelectedTask) =>
@@ -209,7 +594,7 @@ function Inprogress({ route, navigation }) {
               <Ionicons
                 name="add"
                 size={30}
-                style={{ marginLeft: scale(200) }}
+                style={{ marginLeft: scale(30) }}
               ></Ionicons>
             </TouchableOpacity>
           </View>
@@ -291,6 +676,7 @@ function Inprogress({ route, navigation }) {
               setSubAdd(false);
               setSubtask("");
               setMemberEmail([]);
+              setErrorMessage("");
             }}
           >
             <Ionicons
@@ -363,6 +749,7 @@ function Inprogress({ route, navigation }) {
               }}
             />
           </View>
+
           <View>
             <TouchableOpacity
               style={styles.addbutton3}
@@ -430,7 +817,6 @@ function Inprogress({ route, navigation }) {
             style={{ position: "absolute", right: scale(10) }}
             onPress={() => {
               setAddmember(false);
-              setAddtask(true);
             }}
           >
             <Ionicons
@@ -607,18 +993,38 @@ function Inprogress({ route, navigation }) {
                     style={{
                       backgroundColor: colors.white,
                       padding: 30,
-                      width: wp("80%"),
-                      height: hp("40%"),
+                      width: wp("90%"),
+                      height: hp("30%"),
                       borderRadius: 10,
                       borderColor: colors.Royalblue,
                       borderWidth: 1,
                     }}
                   >
                     <TextInput
-                      placeholder="Enter member's email, seperated by comma"
+                      placeholder="Enter member's email seperated by ,"
+                      multiline={false}
+                      style={{
+                        fontFamily: "Inter-Regular",
+                        fontSize: scale(14),
+                      }}
                       onChangeText={(text) => setMemberEmail(text.split(","))}
                       value={memberEmail.join(",")}
                     />
+                    <TouchableOpacity
+                      style={styles.addbutton4}
+                      onPress={() => {
+                        setModalVisible(false);
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: colors.white,
+                          fontFamily: "Inter-Bold",
+                        }}
+                      >
+                        Add
+                      </Text>
+                    </TouchableOpacity>
                   </View>
                 </View>
               </Modal>
@@ -836,7 +1242,6 @@ function Inprogress({ route, navigation }) {
 
                   if (response.ok) {
                     console.log("Task created:", data);
-                    setModalVisible(false);
                     setMemberEmail([]);
                   } else {
                     console.error("Error creating task:", data.error);
@@ -903,6 +1308,18 @@ function Inprogress({ route, navigation }) {
 const Tab = createMaterialTopTabNavigator();
 
 function Tasks({ route, navigation }) {
+  const {
+    workspaceList,
+    setWorkspaceList,
+    workspaceId,
+    setWorkspaceId,
+    UserId,
+  } = React.useContext(WorkspaceMaintain);
+  React.useEffect(() => {
+    if (workspaceId === null) {
+      navigation.navigate("Workspace");
+    }
+  }, [workspaceId, navigation]);
   const [fontsLoaded, setFontsLoaded] = React.useState(false);
 
   React.useEffect(() => {
@@ -997,12 +1414,12 @@ const styles = ScaledSheet.create({
     marginBottom: "10@s",
   },
   username: {
-    width: "100@s",
+    width: "150@s",
     height: "25@s",
     borderRadius: "5@s",
     backgroundColor: "#008BEF",
     marginTop: "5@s",
-    marginLeft: "20@s",
+    marginLeft: "15@s",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -1051,6 +1468,18 @@ const styles = ScaledSheet.create({
     height: scale(40),
     top: scale(30),
     left: scale(60),
+    alignItems: "center",
+    alignSelf: "center",
+    justifyContent: "center",
+    backgroundColor: colors.Royalblue,
+    borderRadius: scale(10),
+  },
+  addbutton4: {
+    width: scale(120),
+    backgroundColor: "#000",
+    height: scale(40),
+    left: scale(60),
+    top: scale(100),
     alignItems: "center",
     alignSelf: "center",
     justifyContent: "center",

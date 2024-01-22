@@ -9,11 +9,13 @@ import Home from "./Home";
 import Workspace from "./Workspace";
 import Tasks from "./Tasks";
 import Creatingtasks from "./Creatingtasks";
+import Todo from "./Todolist";
 //Screen names
 const homeName = "Home";
 const workspaceName = "Workspace";
 const taskName = "Tasks";
-const creating = "Creatingtasks";
+const creating = "New workspace";
+const todolist = "To do";
 
 const Tab = createBottomTabNavigator();
 
@@ -34,6 +36,8 @@ function MaintainScreen({ route, navigation }) {
             iconName = focused ? "albums" : "albums-outline";
           } else if (rn === creating) {
             iconName = focused ? "add-circle" : "add-circle-outline";
+          } else if (rn === todolist) {
+            iconName = focused ? "clipboard" : "clipboard-outline";
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -71,12 +75,18 @@ function MaintainScreen({ route, navigation }) {
         component={Creatingtasks}
         options={{
           headerShown: false,
-          tabBarStyle: { display: "none" },
         }}
       />
       <Tab.Screen
         name={taskName}
         component={Tasks}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Tab.Screen
+        name={todolist}
+        component={Todo}
         options={{
           headerShown: false,
         }}
